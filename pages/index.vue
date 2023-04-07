@@ -5,5 +5,6 @@
 <script setup lang="ts">
 definePageMeta({
     middleware: ['logged-in'],
+    layout: 'app',
 });
 </script>

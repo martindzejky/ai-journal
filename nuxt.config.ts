@@ -5,6 +5,7 @@ export default {
         '@vueuse/nuxt',
         '@nuxtjs/tailwindcss',
         '@pinia/nuxt',
+        'nuxt-icon',
         'nuxt-vuefire',
     ],
 
