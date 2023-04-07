@@ -2,4 +2,8 @@
     <p>Auth</p>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+definePageMeta({
+    middleware: ['logged-out'],
+});
+</script>
