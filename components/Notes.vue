@@ -1,9 +1,9 @@
 <template>
     <div class="flex flex-col gap-4">
-        <p v-if="notes.length === 0">No notes yet. Create one!</p>
+        <p v-if="notes.notes.length === 0">No notes yet. Create one!</p>
 
         <NotePreview
-            v-for="note in notes"
+            v-for="note in notes.notes"
             :key="note.id"
             :note="note"
         />
@@ -13,5 +13,5 @@
 <script setup lang="ts">
 import { useNotes } from '~/store/notes';
 
-const { notes } = useNotes();
+const notes = useNotes();
 </script>

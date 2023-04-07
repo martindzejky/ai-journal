@@ -1,6 +1,9 @@
 <template>
     <article>
-        <p>This is a note!</p>
+        <Editor
+            :model-value="note.content"
+            readonly
+        />
     </article>
 </template>
 

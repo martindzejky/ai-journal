@@ -1,5 +1,4 @@
 dist
 firestore.rules
-.github
 # formatted automatically by npm
 package-lock.json

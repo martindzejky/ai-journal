@@ -14,6 +14,12 @@ export default {
         'nuxt-vuefire',
     ],
 
+    runtimeConfig: {
+        public: {
+            useEmulator: false,
+        },
+    },
+
     // https://vuefire.vuejs.org/nuxt/getting-started.html
     // https://github.com/chrisspiegl/test-nuxt-vuefire-ssr/blob/main/nuxt.config.ts
     vuefire: {
