@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default {
+    // TODO: disabled because vuefire fails to get firestore resources
+    //       which are protected by firebase auth in SSR :'(
+    //       https://github.com/vuejs/vuefire/issues/1310
+    ssr: false,
+
     modules: [
         // used modules
         '@vueuse/nuxt',
