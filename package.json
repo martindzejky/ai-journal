@@ -6,9 +6,16 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "nuxt": "^3.3.3"
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
+    "nuxt": "^3.3.3",
+    "prettier": "^2.8.7"
+  },
+  "lint-staged": {
+    "*.{js,json,ts,vue,md}": "prettier --write"
   }
 }
