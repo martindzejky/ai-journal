@@ -1,9 +1,9 @@
 <template>
     <NuxtLink
         :href="`/notes/${note.id}`"
-        class="mx-6"
+        class="mx-6 md:mx-0 md:border-t md:last:border-b md:border-stone-200"
     >
-        <article class="bg-white px-6 rounded-xl py-4">
+        <article class="bg-white px-6 rounded-xl py-4 md:rounded-none">
             <Editor
                 class="line-clamp-3 text-ellipsis"
                 :model-value="note.content"

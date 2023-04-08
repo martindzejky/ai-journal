@@ -1,4 +1,4 @@
-import { collection, query, where } from '@firebase/firestore';
+import { collection, orderBy, query, where } from '@firebase/firestore';
 import { Note } from '~/types/note';
 
 export const useNotes = defineStore('notes', () => {
@@ -9,7 +9,11 @@ export const useNotes = defineStore('notes', () => {
 
     const notesQuery = computed(() => {
         if (!user.value) return undefined;
-        return query(notesCollection, where('owner', '==', user.value.uid));
+        return query(
+            notesCollection,
+            where('owner', '==', user.value.uid),
+            orderBy('createdAt', 'desc'),
+        );
     });
 
     const notes = useCollection<Note>(notesQuery);
