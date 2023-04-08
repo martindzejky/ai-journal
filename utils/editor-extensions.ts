@@ -1,5 +1,6 @@
 import { Extension, Node } from '@tiptap/vue-3';
-
+import { Plugin } from '@tiptap/pm/state';
+import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import Document from '@tiptap/extension-document';
 import ListItem from '@tiptap/extension-list-item';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -77,5 +78,114 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
 
         Paragraph,
         Text,
+
+        Extension.create({
+            name: 'placeholder',
+
+            addProseMirrorPlugins() {
+                return [
+                    new Plugin({
+                        props: {
+                            decorations: ({ doc, selection }) => {
+                                const decorations: Decoration[] = [];
+
+                                doc.descendants((node, pos, parent) => {
+                                    const isEmpty = !node.isLeaf && !node.childCount;
+
+                                    if (!isEmpty) {
+                                        // Don't display a placeholder for non-empty nodes, but do descend into their
+                                        // child nodes. This is useful, for example, for empty paragraphs inside of lists.
+                                        return true;
+                                    }
+
+                                    // determine the placeholder to show based on the type of the node and its parent
+                                    let placeholder = '';
+
+                                    switch (node.type.name) {
+                                        default:
+                                            // unknown node, don't display any placeholder
+                                            return false;
+
+                                        case 'heading':
+                                            // note title
+                                            placeholder = 'Untitled';
+                                            break;
+
+                                        case 'paragraph': {
+                                            // Paragraphs are usually nested inside other nodes like lists,
+                                            // so we have to check the parent node. Also check whether this is the first paragraph,
+                                            // do not display the placeholder for other paragraphs in lists.
+
+                                            switch (parent?.type.name) {
+                                                default:
+                                                    // unknown parent node, don't display any placeholder
+                                                    return false;
+
+                                                case 'doc':
+                                                    // This is a top-level paragraph, display the placeholder about / commands
+                                                    // only when the cursor is on this line.
+
+                                                    // do not display the hint if anything is selected
+                                                    if (!selection.empty) return false;
+
+                                                    // only display the placeholder when the cursor is inside
+                                                    if (
+                                                        selection.head < pos ||
+                                                        selection.head > pos + node.nodeSize
+                                                    )
+                                                        return false;
+
+                                                    // do not display the empty line placeholder if the editor is not focused
+                                                    if (!this.editor.isFocused) return false;
+
+                                                    placeholder =
+                                                        'Type ' +
+                                                        '<code class="bg-slate-100 px-1 text-center w-6 inline-block rounded-md font-sans">/</code>' +
+                                                        ' for actions, ' +
+                                                        '<code class="bg-slate-100 px-1 text-center w-6 inline-block rounded-md font-sans">@</code>' +
+                                                        ' for mentions';
+                                                    break;
+
+                                                case 'listItem':
+                                                    if (parent.firstChild !== node) return false;
+                                                    placeholder = 'List';
+                                                    break;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+
+                                    decorations.push(
+                                        Decoration.node(pos, pos + node.nodeSize, {
+                                            class: 'relative',
+                                        }),
+
+                                        Decoration.widget(pos + node.nodeSize - 1, () => {
+                                            // create an element for the placeholder
+                                            const element = document.createElement('span');
+
+                                            element.className = [
+                                                'absolute empty-block-placeholder pointer-events-none select-none',
+                                                'text-slate-300 cursor-text',
+                                            ].join(' ');
+
+                                            element.innerHTML = placeholder;
+
+                                            return element;
+                                        }),
+                                    );
+
+                                    // don't descend into the child nodes, we already displayed a placeholder for this node
+                                    return false;
+                                });
+
+                                return DecorationSet.create(doc, decorations);
+                            },
+                        },
+                    }),
+                ];
+            },
+        }),
     ];
 }

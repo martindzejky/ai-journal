@@ -1,17 +1,32 @@
 <template>
+    <nav class="px-4 flex">
+        <NuxtLink
+            href="/notes"
+            class="text-slate-400 text-2xl block p-2 pt-4"
+        >
+            <Icon name="material-symbols:arrow-back" />
+        </NuxtLink>
+
+        <button
+            class="text-slate-400 text-2xl block p-2 pt-4"
+            @click="deleteNote"
+        >
+            <Icon name="material-symbols:delete" />
+        </button>
+    </nav>
+
     <article class="p-6">
         <Editor
             variant="full"
             :model-value="note?.content"
-            @update:model-value="debouncedSetContent"
+            @update:model-value="setContent"
         />
     </article>
 </template>
 
 <script setup lang="ts">
-import { doc, setDoc, updateDoc } from '@firebase/firestore';
-import { Note } from '~/types/note';
-import { debounce } from 'lodash-es';
+import { useNote } from '~/store/note';
+import { storeToRefs } from 'pinia';
 
 definePageMeta({
     name: 'note',
@@ -21,38 +36,11 @@ definePageMeta({
     disableCenterLayout: true,
 });
 
-const db = useFirestore();
-const route = useRoute();
-const user = useCurrentUser();
+const noteStore = useNote();
+const { flushSetContent, setContent, deleteNote } = noteStore;
+const { note } = storeToRefs(noteStore);
 
-const noteId = computed(() => {
-    if (typeof route.params.id !== 'string') return undefined;
-    return route.params.id;
-});
-
-const noteSource = computed(() => {
-    if (!noteId.value) return undefined;
-    return doc(db, 'notes', noteId.value);
-});
-
-const note = useDocument<Note>(noteSource.value);
-
-const debouncedSetContent = debounce(setContent, 1000);
-async function setContent(content: string) {
-    if (!user.value) return;
-    if (!noteSource.value) return;
-
-    if (note.value) {
-        await updateDoc(noteSource.value, { content });
-    } else {
-        await setDoc(noteSource.value, {
-            owner: user.value.uid,
-            content,
-        } as Note);
-    }
-}
-
-onBeforeUnmount(() => {
-    debouncedSetContent.flush();
+onBeforeRouteLeave(async () => {
+    await flushSetContent();
 });
 </script>
