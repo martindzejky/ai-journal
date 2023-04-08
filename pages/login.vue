@@ -1,6 +1,6 @@
 <template>
-    <section>
-        <h1 class="text-lg mb-4">Log in</h1>
+    <section class="max-w-full w-60">
+        <h1 class="text-3xl font-bold text-center mb-6">Log in</h1>
 
         <form
             @submit.prevent="login"
@@ -8,7 +8,6 @@
         >
             <label for="email">Email</label>
             <input
-                class="border border-slate-400"
                 name="email"
                 id="email"
                 type="email"
@@ -19,7 +18,6 @@
 
             <label for="password">Password</label>
             <input
-                class="border border-slate-400"
                 name="password"
                 id="password"
                 type="password"
@@ -30,16 +28,16 @@
 
             <button
                 type="submit"
-                class="bg-amber-400 mt-4"
+                class="bg-amber-400 py-2 px-3 mt-6"
             >
                 Log in
             </button>
         </form>
 
-        <p>
+        <p class="text-slate-500 mt-2 text-center text-sm">
             Don't have an account yet?
             <NuxtLink
-                class="text-amber-500"
+                class="text-amber-400"
                 :href="
                     '/register' +
                     ($route.query?.redirect ? `?redirect=${$route.query.redirect}` : '')
@@ -52,10 +50,13 @@
 </template>
 
 <script setup lang="ts">
+import { signInWithEmailAndPassword } from '@firebase/auth';
+
 definePageMeta({
     middleware: ['logged-out'],
+    name: 'login',
+    title: 'Log in',
 });
-import { signInWithEmailAndPassword } from '@firebase/auth';
 
 const email = ref('');
 const password = ref('');

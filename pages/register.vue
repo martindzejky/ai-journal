@@ -1,6 +1,6 @@
 <template>
-    <section>
-        <h1 class="text-lg mb-4">Register</h1>
+    <section class="max-w-full w-60">
+        <h1 class="text-3xl font-bold text-center mb-6">Register</h1>
 
         <form
             @submit.prevent="register"
@@ -8,7 +8,6 @@
         >
             <label for="email">Email</label>
             <input
-                class="border border-slate-400"
                 type="email"
                 name="email"
                 id="email"
@@ -19,7 +18,6 @@
 
             <label for="password">Password</label>
             <input
-                class="border border-slate-400"
                 type="password"
                 name="password"
                 id="password"
@@ -30,16 +28,16 @@
 
             <button
                 type="submit"
-                class="bg-amber-400 mt-4"
+                class="bg-amber-400 py-2 px-3 mt-6"
             >
                 Register
             </button>
         </form>
 
-        <p>
+        <p class="text-slate-500 text-center mt-2 text-sm">
             Already have an account?
             <NuxtLink
-                class="text-amber-500"
+                class="text-amber-400"
                 :href="
                     '/login' + ($route.query?.redirect ? `?redirect=${$route.query.redirect}` : '')
                 "

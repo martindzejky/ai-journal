@@ -33,4 +33,9 @@ export default {
             appId: process.env.FIREBASE_APP_ID,
         },
     },
+
+    // https://pinia.vuejs.org/ssr/nuxt.html
+    pinia: {
+        autoImports: ['defineStore'],
+    },
 };

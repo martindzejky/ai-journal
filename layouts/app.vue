@@ -4,7 +4,13 @@
             <Nav />
         </nav>
 
-        <main class="main">
+        <main
+            class="main overflow-auto flex flex-col"
+            :class="{
+                'bg-stone-100': !$route.meta.disableDarkBackground,
+                'items-center justify-center': !$route.meta.disableCenterLayout,
+            }"
+        >
             <slot />
         </main>
     </div>
@@ -19,21 +25,16 @@
 
     @media (min-width: 768px) {
         grid-template:
-            'nav' auto
-            'main' 1fr
-            / 1fr;
+            'nav main' auto
+            / auto 1fr;
     }
 }
 
 .main {
-    @apply overflow-auto flex flex-col items-center justify-center;
-
     grid-area: main;
 }
 
 .nav {
-    @apply border-t border-slate-200 md:border-t-0 md:border-b;
-
     grid-area: nav;
 }
 </style>

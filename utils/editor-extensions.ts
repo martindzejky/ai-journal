@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/vue-3';
+import { Extension, Node } from '@tiptap/vue-3';
 
 import Document from '@tiptap/extension-document';
 import ListItem from '@tiptap/extension-list-item';
@@ -8,8 +8,20 @@ import Heading from '@tiptap/extension-heading';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
 
-export function editorExtensions() {
+interface EditorExtensionOptions {
+    variant: 'full' | 'minimal';
+}
+
+export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) {
     return [
+        Extension.create({
+            addKeyboardShortcuts() {
+                return {
+                    Tab: () => true,
+                };
+            },
+        }),
+
         Document.extend({
             content: 'header main',
         }),
@@ -19,7 +31,13 @@ export function editorExtensions() {
             group: 'block',
             content: 'heading',
             renderHTML() {
-                return ['header', 0];
+                return [
+                    'header',
+                    {
+                        class: options.variant === 'minimal' ? 'mb-2' : 'mb-6',
+                    },
+                    0,
+                ];
             },
         }),
 
@@ -35,7 +53,9 @@ export function editorExtensions() {
         Heading.configure({
             levels: [1],
             HTMLAttributes: {
-                class: 'text-2xl font-bold',
+                class: `${
+                    options.variant === 'minimal' ? 'text-lg' : 'text-4xl'
+                } font-bold text-black`,
             },
         }),
 

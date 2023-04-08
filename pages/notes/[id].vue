@@ -1,6 +1,7 @@
 <template>
-    <article>
+    <article class="p-6">
         <Editor
+            variant="full"
             :model-value="note?.content"
             @update:model-value="debouncedSetContent"
         />
@@ -13,8 +14,11 @@ import { Note } from '~/types/note';
 import { debounce } from 'lodash-es';
 
 definePageMeta({
+    name: 'note',
     middleware: ['logged-in'],
     layout: 'app',
+    disableDarkBackground: true,
+    disableCenterLayout: true,
 });
 
 const db = useFirestore();
