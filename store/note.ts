@@ -1,7 +1,6 @@
-import { deleteDoc, doc, setDoc, updateDoc } from '@firebase/firestore';
+import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from '@firebase/firestore';
 import { Note } from '~/types/note';
 import { debounce } from 'lodash-es';
-import { serverTimestamp } from '@firebase/database';
 
 export const useNote = defineStore('note', () => {
     const app = useNuxtApp();

@@ -8,6 +8,20 @@ service cloud.firestore {
             allow delete: if request.auth.uid == resource.data.owner;
         }
 
+        match /chat/{chat} {
+            allow read: if request.auth.uid == resource.data.owner;
+            allow create: if request.auth.uid == request.resource.data.owner;
+            allow update: if request.auth.uid == resource.data.owner;
+            allow delete: if request.auth.uid == resource.data.owner;
+
+            match /messages/{message} {
+                allow read: if request.auth.uid == get(/databases/$(database)/documents/chat/$(chat)).data.owner;
+                allow create: if request.auth.uid == get(/databases/$(database)/documents/chat/$(chat)).data.owner;
+                allow update: if request.auth.uid == get(/databases/$(database)/documents/chat/$(chat)).data.owner;
+                allow delete: if request.auth.uid == get(/databases/$(database)/documents/chat/$(chat)).data.owner;
+            }
+        }
+
         match /{document=**} {
             allow read, write: if false;
         }

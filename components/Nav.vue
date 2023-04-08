@@ -54,7 +54,10 @@
             </NuxtLink>
         </div>
 
-        <div class="border-r w-60 border-stone-200 h-full flex flex-col py-2">
+        <div
+            v-if="$route.name === 'notes' || $route.name === 'note'"
+            class="border-r w-60 border-stone-200 h-full flex flex-col py-2"
+        >
             <h1 class="font-bold text-3xl p-6">Notes</h1>
 
             <Notes />

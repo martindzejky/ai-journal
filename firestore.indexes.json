@@ -7,6 +7,14 @@
                 { "fieldPath": "owner", "order": "ASCENDING" },
                 { "fieldPath": "createdAt", "order": "DESCENDING" }
             ]
+        },
+        {
+            "collectionGroup": "chat",
+            "queryScope": "COLLECTION",
+            "fields": [
+                { "fieldPath": "owner", "order": "ASCENDING" },
+                { "fieldPath": "createdAt", "order": "DESCENDING" }
+            ]
         }
     ],
 
