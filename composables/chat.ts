@@ -50,6 +50,7 @@ export const useChat = defineStore('chat', () => {
     const messages = useCollection<Message>(messagesQuery);
 
     async function submitPrompt(prompt: string) {
+        if (!prompt) return;
         if (!user.value) return;
 
         let existingOrNewChatSource = chatSource.value;

@@ -2,7 +2,7 @@
     <textarea
         name="prompt"
         id="prompt"
-        class="resize-none disabled:bg-stone-50 disabled:cursor-not-allowed md:m-6 placeholder-slate-400 !border-stone-200 border-b-0 border-x-0 md:border md:rounded-lg !outline-none !ring-0"
+        class="resize-none disabled:bg-stone-50 disabled:cursor-not-allowed placeholder-slate-400 !border-stone-200 border-b-0 border-x-0 !outline-none !ring-0"
         :placeholder="placeholder"
         :rows="rows"
         :value="modelValue"

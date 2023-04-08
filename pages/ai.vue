@@ -1,21 +1,16 @@
 <template>
-    <section class="flex flex-col grow">
-        <div class="grow p-6">
-            <Chat />
-        </div>
+    <section class="flex max-h-full flex-col grow">
+        <Chat />
 
         <ChatPrompt
             class="flex-none"
             v-model="prompt"
-            :disabled="lastMessageAuthor === 'user'"
             @keydown.enter="confirm"
         />
     </section>
 </template>
 
 <script setup lang="ts">
-import { last } from 'lodash-es';
-
 definePageMeta({
     middleware: ['logged-in'],
     layout: 'app',
@@ -28,11 +23,6 @@ const prompt = ref('');
 const chatStore = useChat();
 const { messages } = storeToRefs(chatStore);
 const { submitPrompt } = chatStore;
-
-const lastMessageAuthor = computed(() => {
-    if (!messages.value) return;
-    return last(messages.value)?.author;
-});
 
 async function confirm(e: KeyboardEvent) {
     // shift+enter to add a new line
