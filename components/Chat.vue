@@ -9,9 +9,6 @@
 </template>
 
 <script setup lang="ts">
-import { useChat } from '~/store/chat';
-import { storeToRefs } from 'pinia';
-
 const chatStore = useChat();
 const { messages } = storeToRefs(chatStore);
 </script>

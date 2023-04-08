@@ -14,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { useChat } from '~/store/chat';
-import { storeToRefs } from 'pinia';
 import { last } from 'lodash-es';
 
 definePageMeta({

@@ -25,9 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { useNote } from '~/store/note';
-import { storeToRefs } from 'pinia';
-
 definePageMeta({
     name: 'note',
     middleware: ['logged-in'],

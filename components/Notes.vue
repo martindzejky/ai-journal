@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { useNotes } from '~/store/notes';
 import { collection, doc } from '@firebase/firestore';
 
 const notes = useNotes();

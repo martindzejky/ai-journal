@@ -36,6 +36,6 @@ export default {
 
     // https://pinia.vuejs.org/ssr/nuxt.html
     pinia: {
-        autoImports: ['defineStore'],
+        autoImports: ['defineStore', 'storeToRefs'],
     },
 };
