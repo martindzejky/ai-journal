@@ -17,7 +17,7 @@
         <ChatPrompt
             class="flex-none"
             v-model="prompt"
-            :disabled="isLastMessageFromUser"
+            :disabled="isLastMessageFromUser || !isLastMessageDone"
             @keydown.enter="confirm"
         />
     </section>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { last } from 'lodash-es';
+import { AIMessageStatus } from '~/types/message';
 
 definePageMeta({
     middleware: ['logged-in', 'verified-email'],
@@ -44,8 +45,17 @@ const isLastMessageFromUser = computed(() => {
     return lastMessage?.author === 'user';
 });
 
+const isLastMessageDone = computed(() => {
+    const lastMessage = last(messages.value);
+    return (
+        lastMessage?.author === 'ai' &&
+        [AIMessageStatus.Success, AIMessageStatus.Error].includes(lastMessage?.status)
+    );
+});
+
 async function confirm(e: KeyboardEvent) {
     if (isLastMessageFromUser.value) return;
+    if (!isLastMessageDone.value) return;
 
     // shift+enter to add a new line
     if (e.shiftKey) return;
