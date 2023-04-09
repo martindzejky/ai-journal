@@ -1,6 +1,6 @@
 <template>
     <div
-        class="rounded-lg bg-white px-4 py-2"
+        class="rounded-lg bg-white lg:max-w-[80%] px-4 py-2"
         :class="{
             'self-start': message.author === 'ai',
             'self-end': message.author === 'user',

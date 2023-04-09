@@ -95,9 +95,19 @@ export const useChat = defineStore('chat', () => {
         } as Omit<Message, 'id'>);
     }
 
+    async function newChat() {
+        if (!user.value) return;
+
+        await addDoc(chatCollection, {
+            owner: user.value.uid,
+            createdAt: serverTimestamp(),
+        } as Omit<Chat, 'id'>);
+    }
+
     return {
         chat: readonly(chat),
         messages: readonly(messagesWithPlaceholder),
         submitPrompt,
+        newChat,
     };
 });
