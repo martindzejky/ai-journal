@@ -2,15 +2,30 @@
     <section class="flex max-h-full flex-col grow">
         <Chat />
 
+        <p class="px-4 flex gap-2 items-center my-1 text-slate-400">
+            <Icon
+                name="material-symbols:info"
+                class="flex-none text-base"
+            />
+
+            <em class="text-sm leading-tight">
+                This is a technical preview and an experiment. It is not (yet) intended for general
+                use. The AI may generate incorrect or made-up responses.
+            </em>
+        </p>
+
         <ChatPrompt
             class="flex-none"
             v-model="prompt"
+            :disabled="isLastMessageFromUser"
             @keydown.enter="confirm"
         />
     </section>
 </template>
 
 <script setup lang="ts">
+import { last } from 'lodash-es';
+
 definePageMeta({
     middleware: ['logged-in', 'verified-email'],
     layout: 'app',
@@ -24,7 +39,14 @@ const chatStore = useChat();
 const { messages } = storeToRefs(chatStore);
 const { submitPrompt } = chatStore;
 
+const isLastMessageFromUser = computed(() => {
+    const lastMessage = last(messages.value);
+    return lastMessage?.author === 'user';
+});
+
 async function confirm(e: KeyboardEvent) {
+    if (isLastMessageFromUser.value) return;
+
     // shift+enter to add a new line
     if (e.shiftKey) return;
 
