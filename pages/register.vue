@@ -39,12 +39,13 @@
                 placeholder="********"
             />
 
-            <button
+            <Button
                 type="submit"
-                class="bg-amber-400 py-2 px-3 mt-6"
+                class="mt-6"
+                :loading="state === State.Loading"
             >
                 Register
-            </button>
+            </Button>
         </form>
 
         <p class="text-slate-500 text-center mt-2 text-sm">
@@ -63,10 +64,18 @@
 
 <script setup lang="ts">
 import { createUserWithEmailAndPassword, sendEmailVerification } from '@firebase/auth';
+import { updateCurrentUserProfile } from 'vuefire';
 
 definePageMeta({
     middleware: ['logged-out'],
 });
+
+enum State {
+    Idle,
+    Loading,
+}
+
+const state = ref(State.Idle);
 
 const name = ref('');
 const email = ref('');
@@ -81,8 +90,13 @@ const placeholderEmail = getPlaceholderEmail(placeholderName);
 
 async function register() {
     if (!auth) return;
+    if (!name.value || !email.value || !password.value) return;
+    if (state.value !== State.Idle) return;
+
+    state.value = State.Loading;
 
     const result = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    await updateCurrentUserProfile({ displayName: name.value });
     await sendEmailVerification(result.user);
 
     await router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/');

@@ -5,16 +5,15 @@
             class="mb-6 text-slate-300 text-[160px]"
         />
 
-        <p class="mb-2">
+        <h1 class="font-bold text-xl">
+            {{ user?.displayName }}
+        </h1>
+
+        <p class="mb-2 text-base text-slate-600">
             {{ user?.email }}
         </p>
 
-        <button
-            @click="logout"
-            class="px-3 py-2 bg-amber-400"
-        >
-            Logout
-        </button>
+        <Button @click="logout"> Logout </Button>
     </section>
 </template>
 

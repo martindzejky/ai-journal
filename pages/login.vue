@@ -30,7 +30,8 @@
 
             <button
                 type="submit"
-                class="bg-amber-400 py-2 px-3 mt-6"
+                class="mt-6"
+                :loading="state === State.Loading"
             >
                 Log in
             </button>
@@ -60,6 +61,13 @@ definePageMeta({
     title: 'Log in',
 });
 
+enum State {
+    Idle,
+    Loading,
+}
+
+const state = ref(State.Idle);
+
 const email = ref('');
 const password = ref('');
 
@@ -72,6 +80,10 @@ const placeholderEmail = getPlaceholderEmail(placeholderName);
 
 async function login() {
     if (!auth) return;
+    if (!email.value || !password.value) return;
+    if (state.value !== State.Idle) return;
+
+    state.value = State.Loading;
 
     await signInWithEmailAndPassword(auth, email.value, password.value);
     await router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/');
