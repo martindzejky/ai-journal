@@ -5,6 +5,7 @@ node_modules
 .cache
 .output
 .env
+.secret.local
 dist
 .DS_Store
 .idea
