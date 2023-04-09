@@ -1,3 +1,4 @@
+import { IncomingMessage } from 'http';
 import { logger, runWith } from 'firebase-functions';
 import { initializeApp } from 'firebase-admin/app';
 import { AIMessageStatus, Message } from '../../types/message';
@@ -139,7 +140,7 @@ async function processAiMessage(chatId: string, messageId: string) {
             { responseType: 'stream' },
         );
 
-        const stream = response.data as unknown as NodeJS.ReadableStream;
+        const stream = response.data as unknown as IncomingMessage;
 
         // Read the response from the stream
 
