@@ -5,10 +5,12 @@ import {
     orderBy,
     query,
     serverTimestamp,
+    Timestamp,
     where,
 } from '@firebase/firestore';
 import { Chat } from '~/types/chat';
-import { Message } from '~/types/message';
+import { AIMessageStatus, Message } from '~/types/message';
+import { last } from 'lodash-es';
 
 export const useChat = defineStore('chat', () => {
     const user = useCurrentUser();
@@ -49,6 +51,29 @@ export const useChat = defineStore('chat', () => {
 
     const messages = useCollection<Message>(messagesQuery);
 
+    const messagesWithPlaceholder = computed(() => {
+        // assuming that the AI always responds with a message, which
+        // it should, display a placeholder on frontend message while waiting for
+        // the backend to catch up
+
+        if (!messages.value) return undefined;
+
+        const lastMessage = last(messages.value);
+        if (!lastMessage) return messages.value;
+
+        if (lastMessage.author !== 'user') return messages.value;
+
+        return [
+            ...messages.value,
+            {
+                author: 'ai',
+                timestamp: Timestamp.now(),
+                content: '',
+                status: AIMessageStatus.Pending,
+            } as Message,
+        ];
+    });
+
     async function submitPrompt(prompt: string) {
         if (!prompt) return;
         if (!user.value) return;
@@ -72,7 +97,7 @@ export const useChat = defineStore('chat', () => {
 
     return {
         chat: readonly(chat),
-        messages: readonly(messages),
+        messages: readonly(messagesWithPlaceholder),
         submitPrompt,
     };
 });
