@@ -45,6 +45,8 @@
                 <Icon name="material-symbols:chat" />
             </NuxtLink>
 
+            <div class="grow"></div>
+
             <NuxtLink
                 href="/profile"
                 class="text-3xl flex items-center justify-center py-2 px-3 text-slate-400"

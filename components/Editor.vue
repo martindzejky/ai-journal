@@ -7,7 +7,6 @@
 
 <script setup lang="ts">
 import { EditorContent, useEditor } from '@tiptap/vue-3';
-import { editorExtensions } from '~/utils/editor-extensions';
 import { isEqual } from 'lodash-es';
 import { PropType } from '@vue/runtime-core';
 

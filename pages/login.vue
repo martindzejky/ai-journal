@@ -1,5 +1,5 @@
 <template>
-    <section class="max-w-full w-60">
+    <section class="max-w-full w-80">
         <h1 class="text-3xl font-bold text-center mb-6">Log in</h1>
 
         <form
@@ -14,6 +14,7 @@
                 autocomplete="email"
                 v-model="email"
                 required
+                :placeholder="placeholderName"
             />
 
             <label for="password">Password</label>
@@ -24,6 +25,7 @@
                 autocomplete="current-password"
                 v-model="password"
                 required
+                :placeholder="placeholderEmail"
             />
 
             <button
@@ -64,6 +66,9 @@ const password = ref('');
 const auth = useFirebaseAuth();
 const route = useRoute();
 const router = useRouter();
+
+const placeholderName = getPlaceholderName();
+const placeholderEmail = getPlaceholderEmail(placeholderName);
 
 async function login() {
     if (!auth) return;

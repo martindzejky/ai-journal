@@ -1,11 +1,22 @@
 <template>
-    <section class="max-w-full w-60">
+    <section class="max-w-full w-80">
         <h1 class="text-3xl font-bold text-center mb-6">Register</h1>
 
         <form
             @submit.prevent="register"
             class="flex flex-col gap-1"
         >
+            <label for="name">Name</label>
+            <input
+                type="text"
+                name="name"
+                id="name"
+                autocomplete="name"
+                v-model="name"
+                required
+                :placeholder="placeholderName"
+            />
+
             <label for="email">Email</label>
             <input
                 type="email"
@@ -14,6 +25,7 @@
                 autocomplete="email"
                 v-model="email"
                 required
+                :placeholder="placeholderEmail"
             />
 
             <label for="password">Password</label>
@@ -24,6 +36,7 @@
                 autocomplete="new-password"
                 v-model="password"
                 required
+                placeholder="********"
             />
 
             <button
@@ -55,12 +68,16 @@ definePageMeta({
     middleware: ['logged-out'],
 });
 
+const name = ref('');
 const email = ref('');
 const password = ref('');
 
 const auth = useFirebaseAuth();
 const route = useRoute();
 const router = useRouter();
+
+const placeholderName = getPlaceholderName();
+const placeholderEmail = getPlaceholderEmail(placeholderName);
 
 async function register() {
     if (!auth) return;
