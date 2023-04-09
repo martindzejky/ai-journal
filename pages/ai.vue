@@ -34,6 +34,8 @@ const isLastMessageFromUser = computed(() => {
 });
 
 const isLastMessageDone = computed(() => {
+    if (!messages.value?.length) return true;
+
     const lastMessage = last(messages.value);
     return (
         lastMessage?.author === 'ai' &&
