@@ -13,12 +13,22 @@
             {{ user?.email }}
         </p>
 
-        <Button @click="logout"> Logout </Button>
+        <div class="flex gap-2">
+            <Button
+                :is="NuxtLink"
+                href="/settings"
+            >
+                Settings
+            </Button>
+
+            <Button @click="logout"> Logout </Button>
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
 import { signOut } from '@firebase/auth';
+import { NuxtLink } from '#components';
 
 definePageMeta({
     middleware: ['logged-in', 'verified-email'],
