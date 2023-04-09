@@ -134,6 +134,7 @@ async function processAiMessage(chatId: string, messageId: string) {
                 messages: chatCompletionMessages,
                 model: 'gpt-3.5-turbo',
                 temperature: 0.3,
+                max_tokens: 200,
                 stream: true,
                 user: uid,
             },
