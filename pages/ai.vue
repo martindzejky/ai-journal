@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-    middleware: ['logged-in'],
+    middleware: ['logged-in', 'verified-email'],
     layout: 'app',
     name: 'ai',
     title: 'AI',

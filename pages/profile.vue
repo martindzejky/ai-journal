@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-white flex-col flex items-center py-6 px-10 rounded-2xl">
+    <section class="bg-white max-w-screen-sm flex-col flex items-center py-6 px-10 rounded-2xl">
         <Icon
             name="material-symbols:face"
             class="mb-6 text-slate-300 text-[160px]"
@@ -22,8 +22,10 @@
 import { signOut } from '@firebase/auth';
 
 definePageMeta({
-    middleware: ['logged-in'],
+    middleware: ['logged-in', 'verified-email'],
     layout: 'app',
+    name: 'profile',
+    title: 'Profile',
 });
 
 const auth = useFirebaseAuth();

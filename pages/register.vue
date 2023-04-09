@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { createUserWithEmailAndPassword } from '@firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from '@firebase/auth';
 
 definePageMeta({
     middleware: ['logged-out'],
@@ -65,7 +65,9 @@ const router = useRouter();
 async function register() {
     if (!auth) return;
 
-    await createUserWithEmailAndPassword(auth, email.value, password.value);
+    const result = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    await sendEmailVerification(result.user);
+
     await router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/');
 }
 </script>

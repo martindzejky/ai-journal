@@ -15,7 +15,8 @@
 <script setup lang="ts">
 definePageMeta({
     name: 'notes',
-    middleware: ['logged-in'],
+    title: 'Your notes',
+    middleware: ['logged-in', 'verified-email'],
     layout: 'app',
     disableCenterLayout: true,
 });
