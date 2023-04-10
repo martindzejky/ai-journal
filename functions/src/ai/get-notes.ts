@@ -10,9 +10,9 @@ export async function getNotesFromDateRange(uid: string, from: Date, to: Date) {
     const messages = await db
         .collection('notes')
         .where('owner', '==', uid)
-        .where('createdAt', '>=', startOfDay(from))
-        .where('createdAt', '<=', endOfDay(to))
-        .orderBy('createdAt', 'asc')
+        .where('timestamp', '>=', startOfDay(from))
+        .where('timestamp', '<=', endOfDay(to))
+        .orderBy('timestamp', 'asc')
         .get();
 
     return messages.docs.map((doc) => doc.data() as Note);
@@ -27,8 +27,8 @@ export async function getNotesFromPastDays(uid: string, days: number) {
         .collection('notes')
         .where('owner', '==', uid)
         // the days-1 is because we want to include the current day, so days=1 means today only
-        .where('createdAt', '>=', startOfDay(subDays(new Date(), days - 1)))
-        .orderBy('createdAt', 'asc')
+        .where('timestamp', '>=', startOfDay(subDays(new Date(), days - 1)))
+        .orderBy('timestamp', 'asc')
         .get();
 
     return messages.docs.map((doc) => doc.data() as Note);

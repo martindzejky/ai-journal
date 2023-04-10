@@ -12,7 +12,7 @@ export const useNotes = defineStore('notes', () => {
         return query(
             notesCollection,
             where('owner', '==', user.value.uid),
-            orderBy('createdAt', 'desc'),
+            orderBy('timestamp', 'desc'),
         );
     });
 

@@ -23,7 +23,7 @@ export const useChat = defineStore('chat', () => {
         return query(
             chatCollection,
             where('owner', '==', user.value.uid),
-            orderBy('createdAt', 'desc'),
+            orderBy('timestamp', 'desc'),
         );
     });
 
@@ -82,7 +82,7 @@ export const useChat = defineStore('chat', () => {
         if (!existingOrNewChatSource) {
             existingOrNewChatSource = await addDoc(chatCollection, {
                 owner: user.value.uid,
-                createdAt: serverTimestamp(),
+                timestamp: serverTimestamp(),
             } as Omit<Chat, 'id'>);
         }
 
@@ -100,7 +100,7 @@ export const useChat = defineStore('chat', () => {
 
         await addDoc(chatCollection, {
             owner: user.value.uid,
-            createdAt: serverTimestamp(),
+            timestamp: serverTimestamp(),
         } as Omit<Chat, 'id'>);
     }
 

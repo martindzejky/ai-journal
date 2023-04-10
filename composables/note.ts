@@ -30,13 +30,16 @@ export const useNote = defineStore('note', () => {
         if (!noteSource.value) return;
 
         if (note.value) {
-            await updateDoc(noteSource.value, { content, updatedAt: serverTimestamp() });
+            await updateDoc(noteSource.value, {
+                content,
+                lastUpdate: serverTimestamp(),
+            } as Partial<Note>);
         } else {
             await setDoc(noteSource.value, {
                 owner: user.value.uid,
                 content,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
+                timestamp: serverTimestamp(),
+                lastUpdate: serverTimestamp(),
             } as Omit<Note, 'id'>);
         }
     }

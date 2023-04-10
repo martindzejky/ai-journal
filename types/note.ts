@@ -6,6 +6,6 @@ export interface Note {
 
     content: string;
 
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
+    timestamp: Timestamp;
+    lastUpdate: Timestamp;
 }

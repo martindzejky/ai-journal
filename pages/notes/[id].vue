@@ -16,6 +16,8 @@
     </nav>
 
     <article class="p-6">
+        <p class="mb-4 text-slate-400">{{ date }} &middot; Updated {{ updatedAgo }} ago</p>
+
         <Editor
             variant="full"
             :model-value="note?.content"
@@ -25,6 +27,9 @@
 </template>
 
 <script setup lang="ts">
+import { formatDistanceToNow, formatRelative } from 'date-fns';
+import { capitalize } from 'lodash-es';
+
 definePageMeta({
     name: 'note',
     middleware: ['logged-in', 'verified-email'],
@@ -36,6 +41,16 @@ definePageMeta({
 const noteStore = useNote();
 const { flushSetContent, setContent, deleteNote } = noteStore;
 const { note } = storeToRefs(noteStore);
+
+const date = computed(() => {
+    const formatted = formatRelative(note.value?.timestamp.toDate() ?? new Date(), new Date());
+    const split = formatted.split(' at ');
+    return capitalize(split[0]);
+});
+
+const updatedAgo = computed(() => {
+    return formatDistanceToNow(note.value?.timestamp.toDate() ?? new Date());
+});
 
 onBeforeRouteLeave(async () => {
     await flushSetContent();
