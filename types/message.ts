@@ -2,7 +2,7 @@ import { Timestamp } from '@firebase/firestore';
 
 export enum AIMessageStatus {
     Pending = 'pending',
-    GeneratingAction = 'generating-action',
+    GeneratingContext = 'generating-context',
     GeneratingResponse = 'generating-response',
     Success = 'success',
     Error = 'error',

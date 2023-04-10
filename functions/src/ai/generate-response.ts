@@ -4,8 +4,6 @@ import { AIMessageStatus, Message } from '../../../types/message';
 import { logger } from 'firebase-functions';
 import { IncomingMessage } from 'http';
 import { format } from 'date-fns';
-import { Note } from '../../../types/note';
-import { getNoteContentAsText } from '../get-note-content';
 
 /**
  * Based on the given context, ask the ChatGPT API for a response.
@@ -17,7 +15,7 @@ export async function generateResponse(
     messageId: string,
     openAi: OpenAIApi,
     messageRef: DocumentReference,
-    context?: Note[],
+    context?: ChatCompletionRequestMessage[],
 ) {
     const db = getFirestore();
 
@@ -67,20 +65,10 @@ export async function generateResponse(
             `Current date: ${format(new Date(), 'yyyy-MM-dd')}, ${format(new Date(), 'EEEE')}.`,
     });
 
-    // Append the notes context to the chat completion messages if provided
+    // Append the context to the chat completion messages if provided
 
     if (context) {
-        chatCompletionMessages.push(
-            {
-                role: 'user',
-                content:
-                    'Use the content of these journal notes as additional context. Each note has a title, creation date, and content.',
-            },
-            ...context.map((note) => ({
-                role: 'user' as const,
-                content: getNoteContentAsText(note),
-            })),
-        );
+        chatCompletionMessages.push(...context);
     }
 
     // Create the completion request and stream the response. Most of the code below is

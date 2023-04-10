@@ -38,7 +38,7 @@
             >
                 <span v-if="message.status === AIMessageStatus.Pending"> Thinking... </span>
 
-                <span v-else-if="message.status === AIMessageStatus.GeneratingAction">
+                <span v-else-if="message.status === AIMessageStatus.GeneratingContext">
                     Figuring out what to do...
                 </span>
 
