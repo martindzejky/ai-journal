@@ -1,4 +1,4 @@
-import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from '@firebase/firestore';
+import { deleteDoc, doc, serverTimestamp, setDoc, Timestamp, updateDoc } from '@firebase/firestore';
 import { Note } from '~/types/note';
 import { debounce } from 'lodash-es';
 
@@ -44,6 +44,25 @@ export const useNote = defineStore('note', () => {
         }
     }
 
+    async function setTimestamp(timestamp: Date) {
+        if (!user.value) return;
+        if (!noteSource.value) return;
+
+        if (note.value) {
+            await updateDoc(noteSource.value, {
+                timestamp: Timestamp.fromDate(timestamp),
+                lastUpdate: serverTimestamp(),
+            } as Partial<Note>);
+        } else {
+            await setDoc(noteSource.value, {
+                owner: user.value.uid,
+                content: '',
+                timestamp: Timestamp.fromDate(timestamp),
+                lastUpdate: serverTimestamp(),
+            } as Omit<Note, 'id'>);
+        }
+    }
+
     async function deleteNote() {
         if (!noteSource.value) return;
 
@@ -60,6 +79,7 @@ export const useNote = defineStore('note', () => {
         note: readonly(note),
         setContent: debouncedSetContent,
         flushSetContent: debouncedSetContent.flush,
+        setTimestamp,
         deleteNote,
     };
 });
