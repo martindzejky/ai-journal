@@ -39,6 +39,17 @@
                 placeholder="********"
             />
 
+            <label for="invitation-code">Invitation code</label>
+            <Input
+                type="text"
+                name="invitation-code"
+                id="invitation-code"
+                autocomplete="off"
+                v-model="invitationCode"
+                required
+                placeholder="********"
+            />
+
             <Button
                 type="submit"
                 class="mt-6"
@@ -80,6 +91,7 @@ const state = ref(State.Idle);
 const name = ref('');
 const email = ref('');
 const password = ref('');
+const invitationCode = ref('');
 
 const auth = useFirebaseAuth();
 const route = useRoute();
@@ -92,6 +104,9 @@ async function register() {
     if (!auth) return;
     if (!name.value || !email.value || !password.value) return;
     if (state.value !== State.Idle) return;
+
+    // Very crude solution to prevent strangers from registering FOR NOW
+    if (invitationCode.value !== 'dzejky') return;
 
     state.value = State.Loading;
 
