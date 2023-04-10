@@ -5,6 +5,9 @@ import { Chat } from '../../../types/chat';
 import { Configuration, OpenAIApi } from 'openai';
 import { generateResponse } from './generate-response';
 import { AIMessageStatus } from '../../../types/message';
+import { generateAction } from './generate-action';
+import { Action } from './actions';
+import { getNotesFromDateRange, getNotesFromPastDays } from './get-notes';
 
 export async function processAiMessage(
     chatId: string,
@@ -36,7 +39,31 @@ export async function processAiMessage(
 
         // Process the message
 
-        await generateResponse(uid, chatId, messageId, openAi, messageRef);
+        const action = await generateAction(uid, chatId, messageId, openAi, messageRef);
+
+        logger.info('Generated action', {
+            chatId,
+            messageId,
+            action,
+        });
+
+        switch (action.action) {
+            default:
+                await generateResponse(uid, chatId, messageId, openAi, messageRef);
+                break;
+
+            case Action.GetNotes: {
+                const notes = await getNotesFromDateRange(uid, action.startDate, action.endDate);
+                await generateResponse(uid, chatId, messageId, openAi, messageRef, notes);
+                break;
+            }
+
+            case Action.GetPastNotes: {
+                const notes = await getNotesFromPastDays(uid, action.days);
+                await generateResponse(uid, chatId, messageId, openAi, messageRef, notes);
+                break;
+            }
+        }
 
         await messageRef.update({
             status: AIMessageStatus.Success,

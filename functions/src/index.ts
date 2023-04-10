@@ -9,7 +9,10 @@ initializeApp();
 
 const openAiApiKey = defineSecret('OPEN_AI_API_KEY');
 
-export const respondToMessage = runWith({ secrets: [openAiApiKey] })
+export const respondToMessage = runWith({
+    secrets: [openAiApiKey],
+    timeoutSeconds: 540,
+})
     .firestore.document('chat/{chat}/messages/{message}')
     .onCreate(async (snapshot, context) => {
         logger.info('New message has been posted in chat', {

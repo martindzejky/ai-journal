@@ -25,7 +25,8 @@
 
             <em class="text-sm leading-tight">
                 This is a technical preview and an experiment. It is not (yet) intended for general
-                use. The AI may generate incorrect or made-up responses.
+                use. The AI may generate incorrect or made-up responses. Right now, the AI can use
+                your journal notes and up to 10 last chat messages for context.
             </em>
         </p>
     </div>
