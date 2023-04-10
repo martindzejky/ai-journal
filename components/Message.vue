@@ -34,11 +34,19 @@
         <template v-if="message.author === 'ai'">
             <p
                 class="text-xs mb-1 italic text-slate-400 font-medium"
-                v-if="
-                    [AIMessageStatus.Pending, AIMessageStatus.Processing].includes(message.status)
-                "
+                v-if="![AIMessageStatus.Success, AIMessageStatus.Error].includes(message.status)"
             >
-                AI is thinking...
+                <span v-if="message.status === AIMessageStatus.Pending"> Thinking... </span>
+
+                <span v-else-if="message.status === AIMessageStatus.GeneratingAction">
+                    Figuring out what to do...
+                </span>
+
+                <span v-else-if="message.status === AIMessageStatus.GeneratingResponse">
+                    Answering...
+                </span>
+
+                <span v-else-if="message.status === AIMessageStatus.Cancelled"> Cancelled </span>
             </p>
         </template>
 
