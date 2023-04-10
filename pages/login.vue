@@ -7,7 +7,7 @@
             class="flex flex-col gap-1"
         >
             <label for="email">Email</label>
-            <input
+            <Input
                 name="email"
                 id="email"
                 type="email"
@@ -18,7 +18,7 @@
             />
 
             <label for="password">Password</label>
-            <input
+            <Input
                 name="password"
                 id="password"
                 type="password"
@@ -28,13 +28,13 @@
                 :placeholder="placeholderEmail"
             />
 
-            <button
+            <Button
                 type="submit"
                 class="mt-6"
                 :loading="state === State.Loading"
             >
                 Log in
-            </button>
+            </Button>
         </form>
 
         <p class="text-slate-500 mt-2 text-center text-sm">

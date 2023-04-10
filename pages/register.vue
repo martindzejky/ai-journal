@@ -7,7 +7,7 @@
             class="flex flex-col gap-1"
         >
             <label for="name">Name</label>
-            <input
+            <Input
                 type="text"
                 name="name"
                 id="name"
@@ -18,7 +18,7 @@
             />
 
             <label for="email">Email</label>
-            <input
+            <Input
                 type="email"
                 name="email"
                 id="email"
@@ -29,7 +29,7 @@
             />
 
             <label for="password">Password</label>
-            <input
+            <Input
                 type="password"
                 name="password"
                 id="password"

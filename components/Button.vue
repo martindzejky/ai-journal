@@ -1,6 +1,6 @@
 <template>
     <Component
-        class="bg-amber-400 py-2 px-3 flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
+        class="bg-amber-400 rounded-lg py-2 px-3 flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
         :disabled="disabled || loading"
         :is="is"
     >
