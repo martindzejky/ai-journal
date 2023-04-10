@@ -9,6 +9,16 @@
   },
   "main": "lib/functions/src/index.js",
   "dependencies": {
+    "@tiptap/extension-bullet-list": "^2.0.2",
+    "@tiptap/extension-document": "^2.0.2",
+    "@tiptap/extension-heading": "^2.0.2",
+    "@tiptap/extension-list-item": "^2.0.2",
+    "@tiptap/extension-ordered-list": "^2.0.2",
+    "@tiptap/extension-paragraph": "^2.0.2",
+    "@tiptap/extension-text": "^2.0.2",
+    "@tiptap/pm": "^2.0.2",
+    "@tiptap/vue-3": "^2.0.2",
+    "date-fns": "^2.29.3",
     "firebase-admin": "^11.5.0",
     "firebase-functions": "^4.2.0",
     "openai": "^3.2.1"
