@@ -39,7 +39,8 @@
                 <span v-if="message.status === AIMessageStatus.Pending"> Thinking... </span>
 
                 <span v-else-if="message.status === AIMessageStatus.GeneratingContext">
-                    Figuring out what to do...
+                    <span v-if="message.context"> Gathering required context... </span>
+                    <span v-else> Figuring out what to do... </span>
                 </span>
 
                 <span v-else-if="message.status === AIMessageStatus.GeneratingResponse">
@@ -47,6 +48,35 @@
                 </span>
 
                 <span v-else-if="message.status === AIMessageStatus.Cancelled"> Cancelled </span>
+            </p>
+
+            <p
+                class="text-xs mb-1 italic text-slate-400 font-medium"
+                v-if="message.context"
+            >
+                <span v-if="message.context.type === ContextType.Help">
+                    Context: Help with the app
+                </span>
+
+                <span v-else-if="message.context.type === ContextType.AI">
+                    Context: Question about the AI
+                </span>
+
+                <span v-else-if="message.context.type === ContextType.Journal">
+                    Context: Using notes from your journal
+
+                    <span v-if="message.context.from">
+                        from {{ formatRelativeDay(message.context.from.toDate()) }}
+                    </span>
+                    <span
+                        v-if="
+                            message.context.to &&
+                            !isSameDay(message.context.from.toDate(), message.context.to.toDate())
+                        "
+                    >
+                        to {{ formatRelativeDay(message.context.to.toDate()) }}
+                    </span>
+                </span>
             </p>
         </template>
 
@@ -63,6 +93,8 @@
 <script setup lang="ts">
 import { PropType } from '@vue/runtime-core';
 import { AIMessageStatus, Message } from '~/types/message';
+import { ContextType } from '~/types/context';
+import { formatRelative, isSameDay } from 'date-fns';
 
 defineProps({
     message: {
@@ -70,4 +102,10 @@ defineProps({
         required: true,
     },
 });
+
+function formatRelativeDay(date: Date) {
+    const formatted = formatRelative(date, new Date());
+    const split = formatted.split(' at ');
+    return split[0];
+}
 </script>

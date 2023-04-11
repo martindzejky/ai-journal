@@ -1,4 +1,5 @@
 import { Timestamp } from '@firebase/firestore';
+import { Context } from './context';
 
 export enum AIMessageStatus {
     Pending = 'pending',
@@ -20,8 +21,11 @@ interface AIMessage {
     id: string;
     author: 'ai';
     timestamp: Timestamp;
-    content: string;
+
     status: AIMessageStatus;
+    context?: Context | null;
+
+    content: string;
 }
 
 export type Message = UserMessage | AIMessage;

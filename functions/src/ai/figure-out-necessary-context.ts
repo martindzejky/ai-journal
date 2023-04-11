@@ -1,9 +1,9 @@
-import { format, parse, subDays } from 'date-fns';
+import { endOfDay, format, parse, startOfDay, subDays } from 'date-fns';
 import { ChatCompletionRequestMessage, OpenAIApi } from 'openai';
 import { DocumentReference, getFirestore } from 'firebase-admin/firestore';
 import { AIMessageStatus, Message } from '../../../types/message';
 import { logger } from 'firebase-functions';
-import { Context } from './context';
+import { Context, ContextType } from '../../../types/context';
 
 export async function figureOutNecessaryContext(
     uid: string,
@@ -16,6 +16,7 @@ export async function figureOutNecessaryContext(
 
     await messageRef.update({
         status: AIMessageStatus.GeneratingContext,
+        context: null,
     });
 
     // Get the last user message from the chat to use as the prompt
@@ -66,8 +67,8 @@ export async function figureOutNecessaryContext(
     const contextResponse = await openAi.createChatCompletion({
         messages: contextMessages,
         model: 'gpt-3.5-turbo',
-        temperature: 0.1,
-        max_tokens: 30,
+        temperature: 0.05,
+        max_tokens: 100,
         user: uid,
     });
 
@@ -90,10 +91,14 @@ export async function figureOutNecessaryContext(
         const context = contextOutput[0].slice(1, -1);
 
         if (context === 'help') {
-            return { type: 'help' };
+            const context: Context = { type: ContextType.Help };
+            await messageRef.update({ context });
+            return context;
         }
         if (context === 'ai') {
-            return { type: 'ai' };
+            const context: Context = { type: ContextType.AI };
+            await messageRef.update({ context });
+            return context;
         }
         if (context === 'journal') {
             foundJournal = true;
@@ -103,7 +108,26 @@ export async function figureOutNecessaryContext(
 
     // Only continue if "journal" was found
 
-    if (!foundJournal) return;
+    if (!foundJournal) {
+        // sometimes the model outputs just a single word as a result, without quotes, so check for that
+        if (contextResponseContent === 'help') {
+            const context: Context = { type: ContextType.Help };
+            await messageRef.update({ context });
+            return context;
+        }
+        if (contextResponseContent === 'ai') {
+            const context: Context = { type: ContextType.AI };
+            await messageRef.update({ context });
+            return context;
+        }
+
+        if (contextResponseContent !== 'journal') {
+            return; // nothing
+        }
+        // else, output is "journal", so continue
+    }
+
+    await messageRef.update({ context: { type: ContextType.Journal } });
 
     // Step 2. Ask the AI to figure out what date period is necessary based on the prompt.
     // For example, when the user asks to summarize their week, the AI needs to output the dates
@@ -142,8 +166,8 @@ export async function figureOutNecessaryContext(
     const datesResponse = await openAi.createChatCompletion({
         messages: datePeriodMessages,
         model: 'gpt-3.5-turbo',
-        temperature: 0.1,
-        max_tokens: 40,
+        temperature: 0.05,
+        max_tokens: 100,
         user: uid,
     });
 
@@ -168,11 +192,25 @@ export async function figureOutNecessaryContext(
                 const startDate = parse(start, 'yyyy-MM-dd', new Date());
                 const endDate = parse(end, 'yyyy-MM-dd', new Date());
 
-                return { type: 'journal', from: startDate, to: endDate };
+                const context = {
+                    type: ContextType.Journal,
+                    from: startOfDay(startDate),
+                    to: endOfDay(endDate),
+                };
+
+                await messageRef.update({ context });
+                return context;
             } else {
                 const startDate = parse(date, 'yyyy-MM-dd', new Date());
 
-                return { type: 'journal', from: startDate, to: startDate };
+                const context = {
+                    type: ContextType.Journal,
+                    from: startOfDay(startDate),
+                    to: endOfDay(startDate),
+                };
+
+                await messageRef.update({ context });
+                return context;
             }
         } catch (error) {
             // Ignore and continue

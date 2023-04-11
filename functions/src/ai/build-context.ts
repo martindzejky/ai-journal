@@ -1,4 +1,4 @@
-import { Context } from './context';
+import { Context } from '../../../types/context';
 import { ChatCompletionRequestMessage } from 'openai';
 import { logger } from 'firebase-functions';
 import { getNotesFromDateRange } from './get-notes';
@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 export async function buildContext(
     context: Context,
     uid: string,
-): Promise<ChatCompletionRequestMessage[]> {
+): Promise<ChatCompletionRequestMessage[] | undefined> {
     switch (context.type) {
         case 'help':
             return buildHelpContext();
@@ -17,7 +17,8 @@ export async function buildContext(
             return buildAiContext();
 
         case 'journal':
-            return await buildJournalContext(uid, context.from, context.to);
+            if (context.from && context.to)
+                return await buildJournalContext(uid, context.from, context.to);
     }
 }
 
@@ -54,16 +55,16 @@ async function buildJournalContext(
 
     return [
         {
-            role: 'user',
+            role: 'system',
             content:
-                'Use the content of these journal notes as additional context. Each note has an associated date, a title, and content.',
+                "Use the content of these user's journal notes as additional context. Each note has an associated date, a title, and content.",
         },
         ...notes.map((note) => {
             const content = getNoteContentAsText(note);
             const date = format(note.timestamp.toDate(), 'yyyy-MM-dd');
 
             return {
-                role: 'user' as const,
+                role: 'system' as const,
                 content: `${date}\n${content}`,
             };
         }),
