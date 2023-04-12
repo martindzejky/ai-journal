@@ -15,6 +15,14 @@
                 { "fieldPath": "owner", "order": "ASCENDING" },
                 { "fieldPath": "timestamp", "order": "DESCENDING" }
             ]
+        },
+        {
+            "collectionGroup": "messages",
+            "queryScope": "COLLECTION",
+            "fields": [
+                { "fieldPath": "author", "order": "ASCENDING" },
+                { "fieldPath": "timestamp", "order": "DESCENDING" }
+            ]
         }
     ],
 
