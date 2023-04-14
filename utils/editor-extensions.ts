@@ -45,7 +45,7 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Node.create({
             name: 'main',
             group: 'block',
-            content: 'list+',
+            content: 'block+',
             renderHTML() {
                 return ['main', 0];
             },
@@ -121,7 +121,7 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
                                                     // unknown parent node, don't display any placeholder
                                                     return false;
 
-                                                case 'doc':
+                                                case 'main':
                                                     // This is a top-level paragraph, display the placeholder about / commands
                                                     // only when the cursor is on this line.
 
@@ -139,11 +139,14 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
                                                     if (!this.editor.isFocused) return false;
 
                                                     placeholder =
-                                                        'Type ' +
+                                                        'One day... type ' +
                                                         '<code class="bg-slate-100 px-1 text-center w-6 inline-block rounded-md font-sans">/</code>' +
                                                         ' for actions, ' +
                                                         '<code class="bg-slate-100 px-1 text-center w-6 inline-block rounded-md font-sans">@</code>' +
-                                                        ' for mentions';
+                                                        ' for mentions, ' +
+                                                        '<code class="bg-slate-100 px-1 text-center w-6 inline-block rounded-md font-sans">#</code>' +
+                                                        ' for tags, etc.';
+
                                                     break;
 
                                                 case 'listItem':
