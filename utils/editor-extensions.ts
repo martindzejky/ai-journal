@@ -1,4 +1,4 @@
-import { Extension, Node } from '@tiptap/vue-3';
+import { Extension, isNodeSelection, Node } from '@tiptap/vue-3';
 import { Plugin } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import Document from '@tiptap/extension-document';
@@ -188,6 +188,51 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
                         },
                     }),
                 ];
+            },
+        }),
+
+        Extension.create({
+            name: 'keyboardNavigation',
+            addKeyboardShortcuts() {
+                return {
+                    ArrowUp: () => {
+                        const selection = this.editor.state.selection;
+
+                        if (!isNodeSelection(selection)) {
+                            return false;
+                        }
+
+                        return this.editor
+                            .chain()
+                            .setTextSelection(selection.$from.start())
+                            .selectNodeBackward()
+                            .run();
+                    },
+
+                    ArrowDown: () => {
+                        const selection = this.editor.state.selection;
+
+                        if (!isNodeSelection(selection)) {
+                            return false;
+                        }
+
+                        return this.editor
+                            .chain()
+                            .setTextSelection(selection.$to.end())
+                            .selectNodeForward()
+                            .run();
+                    },
+
+                    Escape: () => {
+                        const selection = this.editor.state.selection;
+
+                        if (isNodeSelection(selection)) {
+                            return false;
+                        }
+
+                        return this.editor.commands.selectParentNode();
+                    },
+                };
             },
         }),
     ];

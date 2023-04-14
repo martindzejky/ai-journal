@@ -2,6 +2,7 @@
     <EditorContent
         v-if="editor"
         :editor="editor"
+        class="editor"
     />
 </template>
 
@@ -63,3 +64,9 @@ watch(modelValueParsed, (value) => {
     editor.value.commands.setContent(value, false);
 });
 </script>
+
+<style scoped>
+.editor :deep(.ProseMirror-focused .ProseMirror-selectednode) {
+    @apply bg-cyan-400/20 rounded-lg px-2 py-0.5 -mx-2 -my-0.5;
+}
+</style>
