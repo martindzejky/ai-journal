@@ -4,6 +4,8 @@ import { Message } from '../../types/message';
 import { defineSecret } from 'firebase-functions/params';
 import { processUserMessage } from './ai/process-user-message';
 import { processAiMessage } from './ai/process-ai-message';
+import { Note } from '../../types/note';
+import { Chroma } from './chroma/chroma';
 
 initializeApp();
 
@@ -28,7 +30,56 @@ export const respondToMessage = runWith({
                 break;
 
             case 'ai':
-                await processAiMessage(context.params.chat, context.params.message, openAiApiKey);
+                await processAiMessage(
+                    context.params.chat,
+                    context.params.message,
+                    openAiApiKey.value(),
+                );
                 break;
         }
+    });
+
+export const createNoteInChroma = runWith({
+    secrets: [openAiApiKey],
+})
+    .firestore.document('notes/{note}')
+    .onCreate(async (snapshot, context) => {
+        logger.info('Storing new note in Chroma', {
+            noteId: context.params.note,
+        });
+
+        const noteData = snapshot.data() as Note;
+
+        const chroma = new Chroma(openAiApiKey.value());
+        await chroma.createNote(noteData);
+    });
+
+export const updateNoteInChroma = runWith({
+    secrets: [openAiApiKey],
+})
+    .firestore.document('notes/{note}')
+    .onUpdate(async (change, context) => {
+        logger.info('Updating note in Chroma', {
+            noteId: context.params.note,
+        });
+
+        const noteData = change.after.data() as Note;
+
+        const chroma = new Chroma(openAiApiKey.value());
+        await chroma.updateNote(noteData);
+    });
+
+export const deleteNoteInChroma = runWith({
+    secrets: [openAiApiKey],
+})
+    .firestore.document('notes/{note}')
+    .onDelete(async (snapshot, context) => {
+        logger.info('Deleting note in Chroma', {
+            noteId: context.params.note,
+        });
+
+        const noteData = snapshot.data() as Note;
+
+        const chroma = new Chroma(openAiApiKey.value());
+        await chroma.deleteNote(noteData);
     });

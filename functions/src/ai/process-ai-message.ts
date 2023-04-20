@@ -1,4 +1,3 @@
-import type { SecretParam } from 'firebase-functions/lib/params/types';
 import { logger } from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import { Chat } from '../../../types/chat';
@@ -8,11 +7,7 @@ import { AIMessageStatus } from '../../../types/message';
 import { figureOutNecessaryContext } from './figure-out-necessary-context';
 import { buildContext } from './build-context';
 
-export async function processAiMessage(
-    chatId: string,
-    messageId: string,
-    openAiApiKey: SecretParam,
-) {
+export async function processAiMessage(chatId: string, messageId: string, openAiApiKey: string) {
     logger.info('Processing new AI message', {
         chatId,
         messageId,
@@ -31,7 +26,7 @@ export async function processAiMessage(
         // Create a new OpenAI API client
 
         const openAiConfiguration = new Configuration({
-            apiKey: openAiApiKey.value(),
+            apiKey: openAiApiKey,
         });
 
         const openAi = new OpenAIApi(openAiConfiguration);
