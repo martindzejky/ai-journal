@@ -1,21 +1,22 @@
-export enum ContextType {
-    Journal = 'journal',
-    Help = 'help',
-    AI = 'ai',
+export enum ContextInclude {
+    Documentation = 'documentation',
+    Ai = 'ai',
 }
 
-interface JournalContext {
-    type: ContextType.Journal;
-    from?: Date | null;
-    to?: Date | null;
-}
+/** Context that is passed to OpenAI as an addition to the prompt from the user. */
+export interface Context {
+    /** Relevant note IDs according to Chroma. */
+    relevant?: string[];
 
-interface HelpContext {
-    type: ContextType.Help;
-}
+    /**
+     * If the user asks about specific dates, include notes from those dates in the context.
+     * Both dates are inclusive.
+     */
+    dates?: {
+        from: Date;
+        to: Date;
+    };
 
-interface AIContext {
-    type: ContextType.AI;
+    /** Can contain more context if the AI determines that it needs it, like the app documentation. */
+    include?: ContextInclude[];
 }
-
-export type Context = JournalContext | HelpContext | AIContext;

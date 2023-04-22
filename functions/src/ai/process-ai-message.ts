@@ -1,11 +1,12 @@
 import { logger } from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import { Chat } from '../../../types/chat';
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi } from 'openai';
 import { generateResponse } from './generate-response';
 import { AIMessageStatus } from '../../../types/message';
 import { figureOutNecessaryContext } from './figure-out-necessary-context';
 import { buildContext } from './build-context';
+import { Chroma } from '../chroma/chroma';
 
 export async function processAiMessage(chatId: string, messageId: string, openAiApiKey: string) {
     logger.info('Processing new AI message', {
@@ -20,31 +21,33 @@ export async function processAiMessage(chatId: string, messageId: string, openAi
         // Get the chat data to get the owner's user ID
 
         const chat = await db.collection('chat').doc(chatId).get();
-        const chatData = chat.data() as Chat;
+        const chatData = chat.data() as Omit<Chat, 'id'>;
         const uid = chatData.owner;
 
-        // Create a new OpenAI API client
+        // Create clients
 
-        const openAiConfiguration = new Configuration({
-            apiKey: openAiApiKey,
-        });
-
+        const openAiConfiguration = new Configuration({ apiKey: openAiApiKey });
         const openAi = new OpenAIApi(openAiConfiguration);
+        const chroma = new Chroma(openAiApiKey);
 
         // Process the message
 
-        const context = await figureOutNecessaryContext(uid, chatId, messageId, openAi, messageRef);
+        const context = await figureOutNecessaryContext(
+            uid,
+            chatId,
+            messageId,
+            messageRef,
+            openAi,
+            chroma,
+        );
 
-        let messages: ChatCompletionRequestMessage[] | undefined;
-        if (context) {
-            logger.info('Generated context for prompt', {
-                chatId,
-                messageId,
-                context,
-            });
+        logger.info('Generated context for prompt', {
+            chatId,
+            messageId,
+            context,
+        });
 
-            messages = await buildContext(context, uid);
-        }
+        const messages = await buildContext(context, uid);
 
         await generateResponse(uid, chatId, messageId, openAi, messageRef, messages);
 

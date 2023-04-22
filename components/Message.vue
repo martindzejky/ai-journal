@@ -49,35 +49,6 @@
 
                 <span v-else-if="message.status === AIMessageStatus.Cancelled"> Cancelled </span>
             </p>
-
-            <p
-                class="text-xs mb-1 italic text-slate-400 font-medium"
-                v-if="message.context"
-            >
-                <span v-if="message.context.type === ContextType.Help">
-                    Context: Help with the app
-                </span>
-
-                <span v-else-if="message.context.type === ContextType.AI">
-                    Context: Question about the AI
-                </span>
-
-                <span v-else-if="message.context.type === ContextType.Journal">
-                    Context: Using notes from your journal
-
-                    <span v-if="message.context.from">
-                        from {{ formatRelativeDay(message.context.from.toDate()) }}
-                    </span>
-                    <span
-                        v-if="
-                            message.context.to &&
-                            !isSameDay(message.context.from.toDate(), message.context.to.toDate())
-                        "
-                    >
-                        to {{ formatRelativeDay(message.context.to.toDate()) }}
-                    </span>
-                </span>
-            </p>
         </template>
 
         <p v-if="message.author === 'ai' && message.status === AIMessageStatus.Error">
@@ -93,8 +64,7 @@
 <script setup lang="ts">
 import { PropType } from '@vue/runtime-core';
 import { AIMessageStatus, Message } from '~/types/message';
-import { ContextType } from '~/types/context';
-import { formatRelative, isSameDay } from 'date-fns';
+import { formatRelative } from 'date-fns';
 
 defineProps({
     message: {

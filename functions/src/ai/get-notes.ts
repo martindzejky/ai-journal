@@ -33,3 +33,18 @@ export async function getNotesFromPastDays(uid: string, days: number) {
 
     return messages.docs.map((doc) => doc.data() as Note);
 }
+
+export async function getNotesWithIds(uid: string, ids: string[]) {
+    if (ids.length === 0) return [];
+
+    const db = getFirestore();
+
+    const messages = await db
+        .collection('notes')
+        .where('owner', '==', uid)
+        .where('id', 'in', ids)
+        .orderBy('timestamp', 'asc')
+        .get();
+
+    return messages.docs.map((doc) => doc.data() as Note);
+}

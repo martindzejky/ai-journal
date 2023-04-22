@@ -4,6 +4,7 @@ import { AIMessageStatus, Message } from '../../../types/message';
 import { logger } from 'firebase-functions';
 import { IncomingMessage } from 'http';
 import { format } from 'date-fns';
+import chatAnswerSystem from '../prompts/chat-answer-system';
 
 /**
  * Based on the given context, ask the ChatGPT API for a response.
@@ -59,9 +60,7 @@ export async function generateResponse(
     chatCompletionMessages.unshift({
         role: 'system',
         content:
-            'You are a helpful AI assistant in a journaling app. ' +
-            'Your role is to help the user answer questions using the content of their journal. ' +
-            'You can access their journal entries and use them as context. ' +
+            chatAnswerSystem +
             `Current date: ${format(new Date(), 'yyyy-MM-dd')}, ${format(new Date(), 'EEEE')}.`,
     });
 

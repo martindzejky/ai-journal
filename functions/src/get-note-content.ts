@@ -6,5 +6,5 @@ export function getNoteContentAsText(note: Note) {
     if (!note?.content) return '';
 
     const parsedContent = JSON.parse(note.content);
-    return generateText(parsedContent, editorExtensions());
+    return generateText(parsedContent, editorExtensions(), { blockSeparator: '\n' });
 }

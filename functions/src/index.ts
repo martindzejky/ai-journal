@@ -48,10 +48,13 @@ export const createNoteInChroma = runWith({
             noteId: context.params.note,
         });
 
-        const noteData = snapshot.data() as Note;
+        const noteData = snapshot.data() as Omit<Note, 'id'>;
 
         const chroma = new Chroma(openAiApiKey.value());
-        await chroma.createNote(noteData);
+        await chroma.createNote({
+            id: context.params.note,
+            ...noteData,
+        });
     });
 
 export const updateNoteInChroma = runWith({
@@ -63,10 +66,13 @@ export const updateNoteInChroma = runWith({
             noteId: context.params.note,
         });
 
-        const noteData = change.after.data() as Note;
+        const noteData = change.after.data() as Omit<Note, 'id'>;
 
         const chroma = new Chroma(openAiApiKey.value());
-        await chroma.updateNote(noteData);
+        await chroma.updateNote({
+            id: context.params.note,
+            ...noteData,
+        });
     });
 
 export const deleteNoteInChroma = runWith({
@@ -78,8 +84,6 @@ export const deleteNoteInChroma = runWith({
             noteId: context.params.note,
         });
 
-        const noteData = snapshot.data() as Note;
-
         const chroma = new Chroma(openAiApiKey.value());
-        await chroma.deleteNote(noteData);
+        await chroma.deleteNote(context.params.note);
     });
