@@ -3,8 +3,8 @@ import { DocumentReference, getFirestore } from 'firebase-admin/firestore';
 import { AIMessageStatus, Message } from '../../../types/message';
 import { logger } from 'firebase-functions';
 import { IncomingMessage } from 'http';
-import { format } from 'date-fns';
 import chatAnswerSystem from '../prompts/chat-answer-system';
+import systemCurrentDate from '../prompts/system-current-date';
 
 /**
  * Based on the given context, ask the ChatGPT API for a response.
@@ -59,9 +59,7 @@ export async function generateResponse(
 
     chatCompletionMessages.unshift({
         role: 'system',
-        content:
-            chatAnswerSystem +
-            `Current date: ${format(new Date(), 'yyyy-MM-dd')}, ${format(new Date(), 'EEEE')}.`,
+        content: chatAnswerSystem + systemCurrentDate(),
     });
 
     // Append the context to the chat completion messages if provided
@@ -84,7 +82,7 @@ export async function generateResponse(
             messages: chatCompletionMessages,
             model: 'gpt-3.5-turbo',
             temperature: 0.3,
-            max_tokens: 200,
+            max_tokens: 1000,
             stream: true,
             user: uid,
         },
@@ -101,27 +99,27 @@ export async function generateResponse(
         const payloads = chunk.toString().split('\n\n');
         for (const payload of payloads) {
             if (payload.includes('[DONE]')) return;
-            if (payload.startsWith('data:')) {
-                const data = payload.replace(/(\n)?^data:\s*/g, '');
-                try {
-                    const delta = JSON.parse(data.trim());
-                    const content = delta.choices[0].delta?.content;
+            if (!payload.startsWith('data:')) continue;
 
-                    if (content) {
-                        fullContent += content;
+            const data = payload.replace(/(\n)?^data:\s*/g, '');
+            try {
+                const delta = JSON.parse(data.trim());
+                const content = delta.choices[0].delta?.content;
 
-                        // Update the message with the response from the stream
-                        messageRef.update({
-                            content: fullContent,
-                        });
-                    }
-                } catch (error) {
-                    logger.error('Error while parsing AI response', {
-                        chatId,
-                        messageId,
-                        error,
+                if (content) {
+                    fullContent += content;
+
+                    // Update the message with the response from the stream
+                    messageRef.update({
+                        content: fullContent,
                     });
                 }
+            } catch (error) {
+                logger.error('Error while parsing AI response', {
+                    chatId,
+                    messageId,
+                    error,
+                });
             }
         }
     });

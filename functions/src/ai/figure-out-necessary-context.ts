@@ -1,4 +1,4 @@
-import { format, parse } from 'date-fns';
+import { parse } from 'date-fns';
 import { ChatCompletionRequestMessage, OpenAIApi } from 'openai';
 import { DocumentReference, getFirestore } from 'firebase-admin/firestore';
 import { AIMessageStatus, Message } from '../../../types/message';
@@ -7,6 +7,7 @@ import { Context, ContextInclude } from '../../../types/context';
 import { Chroma } from '../chroma/chroma';
 import contextBuildingSystem from '../prompts/context-building-system';
 import contextBuilding from '../prompts/context-building';
+import systemCurrentDate from '../prompts/system-current-date';
 
 export async function figureOutNecessaryContext(
     uid: string,
@@ -55,9 +56,7 @@ export async function figureOutNecessaryContext(
     const contextMessages: ChatCompletionRequestMessage[] = [
         {
             role: 'system',
-            content:
-                contextBuildingSystem +
-                `Current date: ${format(new Date(), 'yyyy-MM-dd')}, ${format(new Date(), 'EEEE')}.`,
+            content: contextBuildingSystem + systemCurrentDate(),
         },
         {
             role: 'user',
