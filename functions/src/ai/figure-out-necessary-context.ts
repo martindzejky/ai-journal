@@ -45,8 +45,8 @@ export async function figureOutNecessaryContext(
     // Step 1. Ask Chroma to get notes relevant to the prompt. This will be done in parallel to the next step.
 
     const chromaPromise = chroma.query(lastUserMessage.content, uid) as Promise<{
-        ids: string[];
-        distances: number[];
+        ids: string[][];
+        distances: number[][];
     }>;
 
     // Step 2. Ask the AI to figure out what context is necessary based on the prompt. Try to get
@@ -107,17 +107,26 @@ export async function figureOutNecessaryContext(
                     line,
                 });
 
-                const dates = line.slice('dates:'.length).trim().split(' ');
+                let value = line.slice('dates:'.length).trim();
 
-                const from = parse(dates[0], 'yyyy-MM-dd', new Date());
-                const to = parse(dates[1], 'yyyy-MM-dd', new Date());
+                if (value) {
+                    const dates = value.split(' ');
 
-                context.dates = { from, to };
+                    const from = parse(dates[0], 'yyyy-MM-dd', new Date());
+                    const to = parse(dates[1] ?? dates[0], 'yyyy-MM-dd', new Date());
 
-                logger.log('Parsed dates successfully', {
-                    chatId,
-                    messageId,
-                });
+                    context.dates = { from, to };
+
+                    logger.log('Parsed dates successfully', {
+                        chatId,
+                        messageId,
+                    });
+                } else {
+                    logger.log('No dates specified', {
+                        chatId,
+                        messageId,
+                    });
+                }
             } else if (line.startsWith('include:')) {
                 logger.log('Found a line starting with include:', {
                     chatId,
@@ -125,17 +134,26 @@ export async function figureOutNecessaryContext(
                     line,
                 });
 
-                const include = line.slice('include:'.length).trim().split(' ');
+                let value = line.slice('include:'.length).trim();
 
-                context.include = include.filter((name): name is ContextInclude =>
-                    Object.values(ContextInclude).includes(name as ContextInclude),
-                );
+                if (value) {
+                    const include = value.split(' ');
 
-                logger.log('Parsed include successfully', {
-                    chatId,
-                    messageId,
-                    include: context.include,
-                });
+                    context.include = include.filter((name): name is ContextInclude =>
+                        Object.values(ContextInclude).includes(name as ContextInclude),
+                    );
+
+                    logger.log('Parsed include successfully', {
+                        chatId,
+                        messageId,
+                        include: context.include,
+                    });
+                } else {
+                    logger.log('No includes specified', {
+                        chatId,
+                        messageId,
+                    });
+                }
             }
         } catch (e) {
             // ignore lines that can't be parsed
@@ -150,14 +168,14 @@ export async function figureOutNecessaryContext(
 
     // Add the Chroma notes to the context
 
-    if (chromaResponse.ids.length > 0) {
+    if (chromaResponse.ids.length > 0 && chromaResponse.ids[0].length > 0) {
         logger.log('Chroma db returned relevant notes', {
             chatId,
             messageId,
-            ids: chromaResponse.ids,
+            ids: chromaResponse.ids[0],
         });
 
-        context.relevant = chromaResponse.ids;
+        context.relevant = chromaResponse.ids[0];
     }
 
     await messageRef.update({ context });
