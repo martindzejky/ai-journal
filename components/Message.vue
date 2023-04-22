@@ -49,6 +49,39 @@
 
                 <span v-else-if="message.status === AIMessageStatus.Cancelled"> Cancelled </span>
             </p>
+
+            <p
+                class="text-xs mb-1 italic flex flex-wrap items-center gap-1 text-slate-400 font-medium"
+                v-if="message.context"
+            >
+                <span> Using context: </span>
+
+                <span
+                    v-for="include in message.context.include"
+                    :key="include"
+                    class="px-1 py-0.5 rounded bg-slate-100"
+                >
+                    {{ contextIncludeLabel[include] }}
+                </span>
+
+                <MessageNoteContextLink
+                    v-for="relevant in message.context.relevant"
+                    :key="relevant"
+                    :note-id="relevant"
+                    class="px-1 py-0.5 rounded bg-slate-100"
+                />
+
+                <span v-if="message.context.dates">
+                    notes from
+                    <span class="px-1 py-0.5 rounded bg-slate-100">
+                        {{ formatRelativeDay(message.context.dates.from.toDate()) }}
+                    </span>
+                    to
+                    <span class="px-1 py-0.5 rounded bg-slate-100">
+                        {{ formatRelativeDay(message.context.dates.to.toDate()) }}
+                    </span>
+                </span>
+            </p>
         </template>
 
         <p v-if="message.author === 'ai' && message.status === AIMessageStatus.Error">
@@ -65,6 +98,8 @@
 import { PropType } from '@vue/runtime-core';
 import { AIMessageStatus, Message } from '~/types/message';
 import { formatRelative } from 'date-fns';
+import { ContextInclude } from '~/types/context';
+import MessageNoteContextLink from '~/components/MessageNoteContextLink.vue';
 
 defineProps({
     message: {
@@ -72,6 +107,11 @@ defineProps({
         required: true,
     },
 });
+
+const contextIncludeLabel: Record<ContextInclude, string> = {
+    [ContextInclude.Documentation]: 'app documentation',
+    [ContextInclude.Ai]: 'AI assistant',
+};
 
 function formatRelativeDay(date: Date) {
     const formatted = formatRelative(date, new Date());
