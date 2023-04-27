@@ -1,14 +1,22 @@
 <template>
     <div class="flex gap-4 md:gap-0 flex-col">
-        <NuxtLink
+        <button
             class="mx-6 md:mx-0"
-            :href="`/notes/${newId}`"
+            @click="create"
         >
             <div class="bg-white px-6 rounded-xl flex items-center gap-2 py-4">
-                <Icon name="material-symbols:add" />
+                <Icon
+                    v-if="loading"
+                    name="svg-spinners:270-ring"
+                />
+                <Icon
+                    v-else
+                    name="material-symbols:add"
+                />
+
                 New note
             </div>
-        </NuxtLink>
+        </button>
 
         <p
             v-if="notes.notes.length === 0"
@@ -26,10 +34,18 @@
 </template>
 
 <script setup lang="ts">
-import { collection, doc } from '@firebase/firestore';
-
 const notes = useNotes();
+const { createNote } = useNote();
+const router = useRouter();
 
-const db = useFirestore();
-const newId = doc(collection(db, 'notes')).id;
+const loading = ref(false);
+
+async function create() {
+    if (loading.value) return;
+
+    loading.value = true;
+    const id = await createNote();
+    await router.push(`/notes/${id}`);
+    loading.value = false;
+}
 </script>

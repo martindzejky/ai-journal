@@ -1,68 +1,79 @@
 <template>
-    <nav class="px-4 flex">
-        <NuxtLink
-            href="/notes"
-            class="text-slate-400 text-2xl block p-2 pt-4"
-        >
-            <Icon name="material-symbols:arrow-back" />
-        </NuxtLink>
+    <template v-if="pending">
+        <p class="text-slate-400">Loading...</p>
+    </template>
 
-        <button
-            class="text-slate-400 text-2xl block p-2 pt-4"
-            @click="deleteNote"
-        >
-            <Icon name="material-symbols:delete" />
-        </button>
-    </nav>
+    <template v-else-if="error">
+        <NoteError :error="error" />
+    </template>
 
-    <article class="p-6">
-        <p class="mb-4 text-slate-400">
-            <span>
-                {{ date }}
-
-                <button
-                    v-if="state === TimestampState.Hidden"
-                    class="hover:underline"
-                    @click="editTimestamp"
-                >
-                    (edit)
-                </button>
-            </span>
-
-            <span v-if="updatedAgo">&nbsp;&middot;&nbsp;</span>
-            <span v-if="updatedAgo">Updated {{ updatedAgo }} ago</span>
-        </p>
-
-        <form
-            v-if="state !== TimestampState.Hidden"
-            class="flex gap-2 mb-4"
-            @submit.prevent="saveTimestamp"
-        >
-            <Input
-                type="date"
-                :model-value="timestampFormatted"
-                @update:model-value="setTimestampValue"
-            />
-
-            <Button
-                type="submit"
-                :loading="state === TimestampState.Saving"
+    <template v-else>
+        <nav class="px-4 flex">
+            <NuxtLink
+                href="/notes"
+                class="text-slate-400 text-2xl block p-2 pt-4"
             >
-                Save
-            </Button>
-        </form>
+                <Icon name="material-symbols:arrow-back" />
+            </NuxtLink>
 
-        <Editor
-            variant="full"
-            :model-value="note?.content"
-            @update:model-value="setContent"
-        />
-    </article>
+            <button
+                class="text-slate-400 text-2xl block p-2 pt-4"
+                @click="deleteNote"
+            >
+                <Icon name="material-symbols:delete" />
+            </button>
+        </nav>
+
+        <article class="p-6">
+            <p class="mb-4 text-slate-400">
+                <span>
+                    {{ date }}
+
+                    <button
+                        v-if="state === TimestampState.Hidden"
+                        class="hover:underline"
+                        @click="editTimestamp"
+                    >
+                        (edit)
+                    </button>
+                </span>
+
+                <span v-if="updatedAgo">&nbsp;&middot;&nbsp;</span>
+                <span v-if="updatedAgo">Updated {{ updatedAgo }} ago</span>
+            </p>
+
+            <form
+                v-if="state !== TimestampState.Hidden"
+                class="flex gap-2 mb-4"
+                @submit.prevent="saveTimestamp"
+            >
+                <Input
+                    type="date"
+                    :model-value="timestampFormatted"
+                    @update:model-value="setTimestampValue"
+                />
+
+                <Button
+                    type="submit"
+                    :loading="state === TimestampState.Saving"
+                >
+                    Save
+                </Button>
+            </form>
+
+            <Editor
+                variant="full"
+                :model-value="note?.content"
+                @update:model-value="setContent"
+            />
+        </article>
+    </template>
 </template>
 
 <script setup lang="ts">
 import { format, formatDistanceToNow, formatRelative, parse } from 'date-fns';
 import { capitalize } from 'lodash-es';
+import NoteError from '~/components/NoteError.vue';
 
 definePageMeta({
     name: 'note',
@@ -84,7 +95,7 @@ const timestampFormatted = computed(() => format(timestamp.value, 'yyyy-MM-dd'))
 
 const noteStore = useNote();
 const { flushSetContent, setContent, setTimestamp, deleteNote } = noteStore;
-const { note } = storeToRefs(noteStore);
+const { note, pending, error } = storeToRefs(noteStore);
 
 const date = computed(() => {
     const formatted = formatRelative(note.value?.timestamp.toDate() ?? new Date(), new Date());

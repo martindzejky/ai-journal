@@ -1,4 +1,12 @@
-import { deleteDoc, doc, serverTimestamp, setDoc, Timestamp, updateDoc } from '@firebase/firestore';
+import {
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    serverTimestamp,
+    Timestamp,
+    updateDoc,
+} from '@firebase/firestore';
 import { Note } from '~/types/note';
 import { debounce } from 'lodash-es';
 
@@ -21,46 +29,39 @@ export const useNote = defineStore('note', () => {
         return doc(db, 'notes', noteId.value);
     });
 
-    const note = useDocument<Note>(noteSource);
+    const { data: note, pending, error } = useDocument<Note>(noteSource);
 
     const debouncedSetContent = debounce(setContent, 1000);
 
     async function setContent(content: string) {
-        if (!user.value) return;
         if (!noteSource.value) return;
 
-        if (note.value) {
-            await updateDoc(noteSource.value, {
-                content,
-                lastUpdate: serverTimestamp(),
-            } as Partial<Note>);
-        } else {
-            await setDoc(noteSource.value, {
-                owner: user.value.uid,
-                content,
-                timestamp: serverTimestamp(),
-                lastUpdate: serverTimestamp(),
-            } as Omit<Note, 'id'>);
-        }
+        await updateDoc(noteSource.value, {
+            content,
+            lastUpdate: serverTimestamp(),
+        } as Partial<Note>);
     }
 
     async function setTimestamp(timestamp: Date) {
-        if (!user.value) return;
         if (!noteSource.value) return;
 
-        if (note.value) {
-            await updateDoc(noteSource.value, {
-                timestamp: Timestamp.fromDate(timestamp),
-                lastUpdate: serverTimestamp(),
-            } as Partial<Note>);
-        } else {
-            await setDoc(noteSource.value, {
-                owner: user.value.uid,
-                content: '',
-                timestamp: Timestamp.fromDate(timestamp),
-                lastUpdate: serverTimestamp(),
-            } as Omit<Note, 'id'>);
-        }
+        await updateDoc(noteSource.value, {
+            timestamp: Timestamp.fromDate(timestamp),
+            lastUpdate: serverTimestamp(),
+        } as Partial<Note>);
+    }
+
+    async function createNote() {
+        if (!user.value) return;
+
+        const noteRef = await addDoc(collection(db, 'notes'), {
+            owner: user.value.uid,
+            content: '',
+            timestamp: serverTimestamp(),
+            lastUpdate: serverTimestamp(),
+        } as Omit<Note, 'id'>);
+
+        return noteRef.id;
     }
 
     async function deleteNote() {
@@ -77,9 +78,12 @@ export const useNote = defineStore('note', () => {
 
     return {
         note: readonly(note),
+        pending: readonly(pending),
+        error: readonly(error),
         setContent: debouncedSetContent,
         flushSetContent: debouncedSetContent.flush,
         setTimestamp,
+        createNote,
         deleteNote,
     };
 });
