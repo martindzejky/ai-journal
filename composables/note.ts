@@ -31,6 +31,9 @@ export const useNote = defineStore('note', () => {
 
     const { data: note, pending, error } = useDocument<Note>(noteSource);
 
+    // reset error when note changes
+    watch(noteId, () => (error.value = undefined));
+
     const debouncedSetContent = debounce(setContent, 1000);
 
     async function setContent(content: string) {
