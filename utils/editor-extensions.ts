@@ -98,7 +98,12 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
             },
         }),
 
-        Paragraph,
+        Paragraph.configure({
+            HTMLAttributes: {
+                class: 'leading-snug py-1',
+            },
+        }),
+
         Text,
 
         Extension.create({
