@@ -115,12 +115,17 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Text,
         Bold,
         Italic,
-        Code,
         HardBreak,
         HorizontalRule,
         Link,
         Strike,
         Typography,
+
+        Code.configure({
+            HTMLAttributes: {
+                class: 'bg-slate-100 px-1.5 py-0.5 rounded-md font-sans',
+            },
+        }),
 
         Extension.create({
             name: 'placeholder',
