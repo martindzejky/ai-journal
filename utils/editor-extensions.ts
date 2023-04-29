@@ -8,6 +8,14 @@ import OrderedList from '@tiptap/extension-ordered-list';
 import Heading from '@tiptap/extension-heading';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
+import Bold from '@tiptap/extension-bold';
+import Italic from '@tiptap/extension-italic';
+import Code from '@tiptap/extension-code';
+import HardBreak from '@tiptap/extension-hard-break';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
+import Link from '@tiptap/extension-link';
+import Strike from '@tiptap/extension-strike';
+import Typography from '@tiptap/extension-typography';
 
 interface EditorExtensionOptions {
     variant: 'full' | 'minimal';
@@ -105,6 +113,14 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         }),
 
         Text,
+        Bold,
+        Italic,
+        Code,
+        HardBreak,
+        HorizontalRule,
+        Link,
+        Strike,
+        Typography,
 
         Extension.create({
             name: 'placeholder',
