@@ -9,7 +9,7 @@ export async function processUserMessage(chatId: string, messageId: string) {
     });
 
     const db = getFirestore();
-    await db.collection('chat').doc(chatId).collection('messages').add({
+    await db.collection('chats').doc(chatId).collection('messages').add({
         timestamp: FieldValue.serverTimestamp(),
         author: 'ai',
         content: '',

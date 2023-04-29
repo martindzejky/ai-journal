@@ -32,7 +32,7 @@ export async function figureOutNecessaryContext(
     });
 
     const messages = await db
-        .collection('chat')
+        .collection('chats')
         .doc(chatId)
         .collection('messages')
         .where('author', '==', 'user')
@@ -166,8 +166,12 @@ export async function figureOutNecessaryContext(
     }
 
     // Add the Chroma notes to the context
-
-    if (chromaResponse.ids.length > 0 && chromaResponse.ids[0].length > 0) {
+    if (
+        chromaResponse &&
+        'ids' in chromaResponse &&
+        chromaResponse.ids.length > 0 &&
+        chromaResponse.ids[0].length > 0
+    ) {
         logger.log('Chroma db returned relevant notes', {
             chatId,
             messageId,

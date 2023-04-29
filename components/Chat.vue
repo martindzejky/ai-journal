@@ -9,14 +9,6 @@
             :message="message"
         />
 
-        <Button
-            class="self-center mt-8"
-            v-if="messages?.length >= 2"
-            @click="chatStore.newChat"
-        >
-            Start a new chat
-        </Button>
-
         <p class="px-4 flex gap-2 items-center text-slate-400">
             <Icon
                 name="material-symbols:info"

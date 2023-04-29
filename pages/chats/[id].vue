@@ -18,7 +18,7 @@ import { AIMessageStatus } from '~/types/message';
 definePageMeta({
     middleware: ['logged-in', 'verified-email'],
     layout: 'app',
-    name: 'ai',
+    name: 'chat',
     title: 'AI',
     disableCenterLayout: true,
 });

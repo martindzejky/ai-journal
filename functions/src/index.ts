@@ -15,7 +15,7 @@ export const respondToMessage = runWith({
     secrets: [openAiApiKey],
     timeoutSeconds: 540,
 })
-    .firestore.document('chat/{chat}/messages/{message}')
+    .firestore.document('chats/{chat}/messages/{message}')
     .onCreate(async (snapshot, context) => {
         logger.info('New message has been posted in chat', {
             chatId: context.params.chat,

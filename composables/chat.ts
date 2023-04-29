@@ -1,43 +1,40 @@
 import {
     addDoc,
     collection,
+    deleteDoc,
     doc,
     orderBy,
     query,
     serverTimestamp,
     Timestamp,
-    where,
 } from '@firebase/firestore';
 import { Chat } from '~/types/chat';
 import { AIMessageStatus, Message } from '~/types/message';
 import { last } from 'lodash-es';
 
 export const useChat = defineStore('chat', () => {
+    const app = useNuxtApp();
+    const route = app.$router.currentRoute;
+    const router = app.$router;
+
     const user = useCurrentUser();
     const db = useFirestore();
 
-    const chatCollection = collection(db, 'chat');
-
-    const chatQuery = computed(() => {
-        if (!user.value) return undefined;
-        return query(
-            chatCollection,
-            where('owner', '==', user.value.uid),
-            orderBy('timestamp', 'desc'),
-        );
-    });
-
-    const chats = useCollection<Chat>(chatQuery);
-
-    const chat = computed(() => {
-        if (!chats.value) return undefined;
-        return chats.value[0];
+    const chatId = computed(() => {
+        if (route.value.name !== 'chat') return undefined;
+        if (typeof route.value.params.id !== 'string') return undefined;
+        return route.value.params.id;
     });
 
     const chatSource = computed(() => {
-        if (!chat.value) return undefined;
-        return doc(db, 'chat', chat.value.id);
+        if (!chatId.value) return undefined;
+        return doc(db, 'chats', chatId.value);
     });
+
+    const { data: chat, pending, error } = useDocument<Chat>(chatSource);
+
+    // reset error when chat changes
+    watch(chatId, () => (error.value = undefined));
 
     const messagesCollection = computed(() => {
         if (!chatSource.value) return undefined;
@@ -77,37 +74,40 @@ export const useChat = defineStore('chat', () => {
     async function submitPrompt(prompt: string) {
         if (!prompt) return;
         if (!user.value) return;
+        if (!messagesCollection.value) return;
 
-        let existingOrNewChatSource = chatSource.value;
-        if (!existingOrNewChatSource) {
-            existingOrNewChatSource = await addDoc(chatCollection, {
-                owner: user.value.uid,
-                timestamp: serverTimestamp(),
-            } as Omit<Chat, 'id'>);
-        }
-
-        const messagesCollection = collection(existingOrNewChatSource, 'messages');
-
-        await addDoc(messagesCollection, {
+        await addDoc(messagesCollection.value, {
             author: 'user',
             timestamp: serverTimestamp(),
             content: prompt,
         } as Omit<Message, 'id'>);
     }
 
-    async function newChat() {
+    async function createChat() {
         if (!user.value) return;
 
-        await addDoc(chatCollection, {
+        const chatRef = await addDoc(collection(db, 'chats'), {
             owner: user.value.uid,
             timestamp: serverTimestamp(),
         } as Omit<Chat, 'id'>);
+
+        return chatRef.id;
+    }
+
+    async function deleteChat() {
+        if (!chatSource.value) return;
+
+        await deleteDoc(chatSource.value);
+        await router.push('/chats');
     }
 
     return {
         chat: readonly(chat),
+        pending: readonly(pending),
+        error: readonly(error),
         messages: readonly(messagesWithPlaceholder),
         submitPrompt,
-        newChat,
+        createChat,
+        deleteChat,
     };
 });

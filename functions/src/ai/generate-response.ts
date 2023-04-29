@@ -32,7 +32,7 @@ export async function generateResponse(
     });
 
     const messages = await db
-        .collection('chat')
+        .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('timestamp', 'desc')

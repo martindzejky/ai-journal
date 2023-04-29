@@ -16,11 +16,11 @@ export async function processAiMessage(chatId: string, messageId: string, openAi
 
     try {
         const db = getFirestore();
-        const messageRef = db.collection('chat').doc(chatId).collection('messages').doc(messageId);
+        const messageRef = db.collection('chats').doc(chatId).collection('messages').doc(messageId);
 
         // Get the chat data to get the owner's user ID
 
-        const chat = await db.collection('chat').doc(chatId).get();
+        const chat = await db.collection('chats').doc(chatId).get();
         const chatData = chat.data() as Omit<Chat, 'id'>;
         const uid = chatData.owner;
 
@@ -58,11 +58,12 @@ export async function processAiMessage(chatId: string, messageId: string, openAi
         logger.error('Error while generating an AI response', {
             chatId,
             messageId,
-            error: e,
         });
 
+        logger.error(e);
+
         const db = getFirestore();
-        await db.collection('chat').doc(chatId).collection('messages').doc(messageId).update({
+        await db.collection('chats').doc(chatId).collection('messages').doc(messageId).update({
             status: AIMessageStatus.Error,
         });
     }

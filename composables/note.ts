@@ -72,10 +72,7 @@ export const useNote = defineStore('note', () => {
 
         debouncedSetContent.cancel();
 
-        if (note.value) {
-            await deleteDoc(noteSource.value);
-        }
-
+        await deleteDoc(noteSource.value);
         await router.push('/notes');
     }
 
