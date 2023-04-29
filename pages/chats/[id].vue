@@ -1,5 +1,16 @@
 <template>
-    <section class="flex max-h-full flex-col grow">
+    <template v-if="pending">
+        <p class="text-slate-400">Loading...</p>
+    </template>
+
+    <template v-else-if="error">
+        <ChatError :error="error" />
+    </template>
+
+    <section
+        v-else
+        class="flex max-h-full flex-col grow"
+    >
         <Chat />
 
         <ChatPrompt
@@ -25,7 +36,7 @@ definePageMeta({
 
 const prompt = ref('');
 const chatStore = useChat();
-const { messages } = storeToRefs(chatStore);
+const { messages, pending, error } = storeToRefs(chatStore);
 const { submitPrompt } = chatStore;
 
 const isLastMessageFromUser = computed(() => {
