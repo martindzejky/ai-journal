@@ -116,7 +116,6 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Bold,
         Italic,
         HardBreak,
-        HorizontalRule,
         Link,
         Strike,
         Typography,
@@ -124,6 +123,12 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Code.configure({
             HTMLAttributes: {
                 class: 'bg-slate-100 px-1.5 py-0.5 rounded-md font-sans',
+            },
+        }),
+
+        HorizontalRule.configure({
+            HTMLAttributes: {
+                class: 'my-6 text-stone-200',
             },
         }),
 
