@@ -18,6 +18,7 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Extension.create({
             addKeyboardShortcuts() {
                 return {
+                    // capture TAB key in editor, make sure it does not move focus
                     Tab: () => true,
                 };
             },
@@ -29,7 +30,6 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
 
         Node.create({
             name: 'header',
-            group: 'block',
             content: 'heading',
             renderHTML() {
                 return [
@@ -40,18 +40,40 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
                     0,
                 ];
             },
+            addKeyboardShortcuts() {
+                return {
+                    Enter: () => {
+                        // if the cursor is inside a header, move the cursor to the beginning of main
+
+                        if (!this.editor.isActive('header')) return false;
+                        if (!this.editor.state.selection.empty) return false;
+
+                        const $pos = this.editor.state.doc.resolve(
+                            this.editor.state.selection.anchor,
+                        );
+
+                        try {
+                            return this.editor.commands.setTextSelection($pos.after(1) + 1);
+                        } catch (e) {
+                            return false;
+                        }
+                    },
+                };
+            },
         }),
 
         Node.create({
             name: 'main',
-            group: 'block',
             content: 'block+',
             renderHTML() {
                 return ['main', 0];
             },
         }),
 
-        Heading.configure({
+        Heading.extend({
+            // make sure that headings are not available in note content
+            group: '',
+        }).configure({
             levels: [1],
             HTMLAttributes: {
                 class: `${
