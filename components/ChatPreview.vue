@@ -4,11 +4,7 @@
         class="mx-6 md:mx-0 md:border-t md:last:border-b md:border-stone-200"
     >
         <article class="bg-white px-6 rounded-xl py-4 md:rounded-none">
-            <p class="mb-1 text-sm text-slate-400">
-                {{ date }}
-            </p>
-
-            <span>TODO... Name here</span>
+            <p class="text-slate-400">Chat from {{ date }}</p>
         </article>
     </NuxtLink>
 </template>
