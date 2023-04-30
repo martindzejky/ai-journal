@@ -2,7 +2,8 @@
   "name": "functions",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "gcp-build": ""
   },
   "engines": {
     "node": "16"

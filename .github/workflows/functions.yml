@@ -1,0 +1,34 @@
+name: Functions
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Install Firebase CLI
+              run: npm install --global firebase-tools@11.29.1
+
+            - name: Install dependencies
+              working-directory: functions
+              run: npm ci
+
+            - name: Build
+              working-directory: functions
+              run: npm run build
+
+            # https://github.com/google-github-actions/auth#authenticating-via-service-account-key-json-1
+            - name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@v1
+              with:
+                  credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+            - name: Deploy
+              run: firebase deploy
