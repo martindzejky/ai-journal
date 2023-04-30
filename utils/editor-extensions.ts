@@ -1,4 +1,4 @@
-import { Extension, Node } from '@tiptap/vue-3';
+import { Extension, Node } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import Document from '@tiptap/extension-document';
