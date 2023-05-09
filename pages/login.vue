@@ -14,7 +14,7 @@
                 autocomplete="email"
                 v-model="email"
                 required
-                :placeholder="placeholderName"
+                :placeholder="placeholderEmail"
             />
 
             <label for="password">Password</label>
@@ -25,7 +25,7 @@
                 autocomplete="current-password"
                 v-model="password"
                 required
-                :placeholder="placeholderEmail"
+                placeholder="********"
             />
 
             <Button
