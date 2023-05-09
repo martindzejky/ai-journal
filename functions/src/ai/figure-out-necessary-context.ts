@@ -80,12 +80,15 @@ export async function figureOutNecessaryContext(
         messageId,
     });
 
-    const [chromaResponse, contextResponse] = await Promise.all([
+    const [chromaResponse, contextResponse] = await Promise.allSettled([
         chromaPromise,
         contextResponsePromise,
     ]);
 
-    const contextResponseContent = contextResponse.data?.choices?.[0]?.message?.content;
+    const contextResponseContent =
+        contextResponse.status === 'fulfilled'
+            ? contextResponse.value.data?.choices?.[0]?.message?.content
+            : undefined;
 
     // Parse the response
 
@@ -167,18 +170,19 @@ export async function figureOutNecessaryContext(
 
     // Add the Chroma notes to the context
     if (
-        chromaResponse &&
-        'ids' in chromaResponse &&
-        chromaResponse.ids.length > 0 &&
-        chromaResponse.ids[0].length > 0
+        chromaResponse.status === 'fulfilled' &&
+        chromaResponse.value &&
+        'ids' in chromaResponse.value &&
+        chromaResponse.value.ids.length > 0 &&
+        chromaResponse.value.ids[0].length > 0
     ) {
         logger.log('Chroma db returned relevant notes', {
             chatId,
             messageId,
-            ids: chromaResponse.ids[0],
+            ids: chromaResponse.value.ids[0],
         });
 
-        context.relevant = chromaResponse.ids[0];
+        context.relevant = chromaResponse.value.ids[0];
     }
 
     await messageRef.update({ context });
