@@ -8,7 +8,7 @@
                 {{ date }}
             </p>
             <Editor
-                class="line-clamp-3 text-ellipsis"
+                class="max-h-40 overflow-hidden text-ellipsis"
                 :model-value="note.content"
                 readonly
                 variant="minimal"
