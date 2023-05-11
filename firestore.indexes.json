@@ -9,7 +9,7 @@
             ]
         },
         {
-            "collectionGroup": "chat",
+            "collectionGroup": "chats",
             "queryScope": "COLLECTION",
             "fields": [
                 { "fieldPath": "owner", "order": "ASCENDING" },
