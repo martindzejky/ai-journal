@@ -21,40 +21,46 @@ export class Chroma {
     }
 
     async createNote(note: Note) {
+        const noteContentAsText = getNoteContentAsText(note).trim();
+        if (!noteContentAsText) {
+            // we have to return because chroma returns error 400 when an empty document is passed in
+            return;
+        }
+
         const collection = await this.prepareCollection();
         await collection.add({
-            ids: [note.id],
-            metadatas: [{ owner: note.owner }],
-            documents: [getNoteContentAsText(note)],
+            ids: note.id,
+            metadatas: { owner: note.owner },
+            documents: noteContentAsText,
         });
-
-        console.log('PEEK:');
-        console.log(await collection.peek());
     }
 
     async updateNote(note: Note) {
         const collection = await this.prepareCollection();
 
         // first check if the note already exists in the collection and if not, create it
-        const existingNote = await collection.get({ ids: [note.id] });
-        console.log('existingNote', existingNote);
+        const existingNote = await collection.get({ ids: note.id });
 
-        await collection.update({
-            ids: [note.id],
-            metadatas: [{ owner: note.owner }],
-            documents: [getNoteContentAsText(note)],
-        });
+        if (existingNote.ids?.length > 0) {
+            const noteContentAsText = getNoteContentAsText(note);
+            if (!noteContentAsText) {
+                // we have to return because chroma returns error 400 when an empty document is passed in
+                return;
+            }
 
-        console.log('PEEK:');
-        console.log(await collection.peek());
+            await collection.update({
+                ids: note.id,
+                metadatas: { owner: note.owner },
+                documents: noteContentAsText,
+            });
+        } else {
+            await this.createNote(note);
+        }
     }
 
     async deleteNote(id: Note['id']) {
         const collection = await this.prepareCollection();
-        await collection.delete({ ids: [id] });
-
-        console.log('PEEK:');
-        console.log(await collection.peek());
+        await collection.delete({ ids: id });
     }
 
     private async prepareCollection() {
