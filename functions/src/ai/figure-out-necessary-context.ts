@@ -45,10 +45,7 @@ export async function figureOutNecessaryContext(
 
     // Step 1. Ask Chroma to get notes relevant to the prompt. This will be done in parallel to the next step.
 
-    const chromaPromise = chroma.query(lastUserMessage.content, uid) as Promise<{
-        ids: string[][];
-        distances: number[][];
-    }>;
+    const chromaPromise = chroma.query(lastUserMessage.content, uid);
 
     // Step 2. Ask the AI to figure out what context is necessary based on the prompt. Try to get
     // the context in one request so ask both for dates and what the user's intent is.
@@ -90,15 +87,30 @@ export async function figureOutNecessaryContext(
             ? contextResponse.value.data?.choices?.[0]?.message?.content
             : undefined;
 
+    if (contextResponse.status === 'rejected') {
+        logger.log('Context building request to OpenAI failed', {
+            chatId,
+            messageId,
+            error: contextResponse.reason,
+        });
+    }
+
     // Parse the response
 
     const responseContentLines = contextResponseContent?.split('\n') ?? [];
     const context: Context = {};
 
-    logger.log('Parsing context building response', {
-        chatId,
-        messageId,
-    });
+    if (responseContentLines.length > 0) {
+        logger.log('Parsing context building response', {
+            chatId,
+            messageId,
+        });
+    } else {
+        logger.log('Context building response was empty', {
+            chatId,
+            messageId,
+        });
+    }
 
     for (const line of responseContentLines) {
         try {
@@ -172,17 +184,23 @@ export async function figureOutNecessaryContext(
     if (
         chromaResponse.status === 'fulfilled' &&
         chromaResponse.value &&
-        'ids' in chromaResponse.value &&
-        chromaResponse.value.ids.length > 0 &&
-        chromaResponse.value.ids[0].length > 0
+        chromaResponse.value.length > 0
     ) {
         logger.log('Chroma db returned relevant notes', {
             chatId,
             messageId,
-            ids: chromaResponse.value.ids[0],
+            ids: chromaResponse.value,
         });
 
-        context.relevant = chromaResponse.value.ids[0];
+        context.relevant = chromaResponse.value;
+    }
+
+    if (chromaResponse.status === 'rejected') {
+        logger.log('Chroma db request failed', {
+            chatId,
+            messageId,
+            error: chromaResponse.reason,
+        });
     }
 
     await messageRef.update({ context });
