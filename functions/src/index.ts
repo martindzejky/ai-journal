@@ -1,4 +1,8 @@
-import { logger, runWith } from 'firebase-functions';
+import {
+    onDocumentCreated,
+    onDocumentDeleted,
+    onDocumentUpdated,
+} from 'firebase-functions/v2/firestore';
 import { initializeApp } from 'firebase-admin/app';
 import { Message } from '../../types/message';
 import { defineSecret } from 'firebase-functions/params';
@@ -6,84 +10,96 @@ import { processUserMessage } from './ai/process-user-message';
 import { processAiMessage } from './ai/process-ai-message';
 import { Note } from '../../types/note';
 import { Chroma } from './chroma/chroma';
+import { logger } from 'firebase-functions';
 
 initializeApp();
 
 const openAiApiKey = defineSecret('OPEN_AI_API_KEY');
 
-export const respondToMessage = runWith({
-    secrets: [openAiApiKey],
-    timeoutSeconds: 540,
-})
-    .firestore.document('chats/{chat}/messages/{message}')
-    .onCreate(async (snapshot, context) => {
+export const respondtomessagev2 = onDocumentCreated(
+    {
+        secrets: [openAiApiKey],
+        timeoutSeconds: 540,
+        document: 'chats/{chat}/messages/{message}',
+    },
+    async (event) => {
         logger.info('New message has been posted in chat', {
-            chatId: context.params.chat,
-            messageId: context.params.message,
+            chatId: event.params.chat,
+            messageId: event.params.message,
         });
 
-        const messageData = snapshot.data() as Message;
+        const messageData = event.data?.data() as undefined | Message;
+        if (!messageData) throw new Error('Message data is undefined');
 
         switch (messageData.author) {
             case 'user':
-                await processUserMessage(context.params.chat, context.params.message);
+                await processUserMessage(event.params.chat, event.params.message);
                 break;
 
             case 'ai':
                 await processAiMessage(
-                    context.params.chat,
-                    context.params.message,
+                    event.params.chat,
+                    event.params.message,
                     openAiApiKey.value(),
                 );
                 break;
         }
-    });
+    },
+);
 
-export const createNoteInChroma = runWith({
-    secrets: [openAiApiKey],
-})
-    .firestore.document('notes/{note}')
-    .onCreate(async (snapshot, context) => {
+export const createnoteinchromav2 = onDocumentCreated(
+    {
+        secrets: [openAiApiKey],
+        document: 'notes/{note}',
+    },
+    async (event) => {
         logger.info('Storing new note in Chroma', {
-            noteId: context.params.note,
+            noteId: event.params.note,
         });
 
-        const noteData = snapshot.data() as Omit<Note, 'id'>;
+        const noteData = event.data?.data() as undefined | Omit<Note, 'id'>;
+        if (!noteData) throw new Error('Note data is undefined');
 
         const chroma = new Chroma(openAiApiKey.value());
         await chroma.createNote({
-            id: context.params.note,
+            id: event.params.note,
             ...noteData,
         });
-    });
+    },
+);
 
-export const updateNoteInChroma = runWith({
-    secrets: [openAiApiKey],
-})
-    .firestore.document('notes/{note}')
-    .onUpdate(async (change, context) => {
+export const updatenoteinchromav2 = onDocumentUpdated(
+    {
+        secrets: [openAiApiKey],
+        document: 'notes/{note}',
+    },
+    async (event) => {
         logger.info('Updating note in Chroma', {
-            noteId: context.params.note,
+            noteId: event.params.note,
         });
 
-        const noteData = change.after.data() as Omit<Note, 'id'>;
+        const noteData = event.data?.after.data() as undefined | Omit<Note, 'id'>;
+        if (!noteData) throw new Error('Note data is undefined');
 
         const chroma = new Chroma(openAiApiKey.value());
         await chroma.updateNote({
-            id: context.params.note,
+            id: event.params.note,
             ...noteData,
         });
-    });
+    },
+);
 
-export const deleteNoteInChroma = runWith({
-    secrets: [openAiApiKey],
-})
-    .firestore.document('notes/{note}')
-    .onDelete(async (snapshot, context) => {
+export const deletenoteinchromav2 = onDocumentDeleted(
+    {
+        secrets: [openAiApiKey],
+        document: 'notes/{note}',
+    },
+    async (event) => {
         logger.info('Deleting note in Chroma', {
-            noteId: context.params.note,
+            noteId: event.params.note,
         });
 
         const chroma = new Chroma(openAiApiKey.value());
-        await chroma.deleteNote(context.params.note);
-    });
+        await chroma.deleteNote(event.params.note);
+    },
+);
