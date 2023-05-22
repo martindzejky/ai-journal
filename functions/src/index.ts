@@ -16,7 +16,7 @@ initializeApp();
 
 const openAiApiKey = defineSecret('OPEN_AI_API_KEY');
 
-export const respondtomessagev2 = onDocumentCreated(
+export const respondToMessage = onDocumentCreated(
     {
         secrets: [openAiApiKey],
         timeoutSeconds: 540,
@@ -47,7 +47,7 @@ export const respondtomessagev2 = onDocumentCreated(
     },
 );
 
-export const createnoteinchromav2 = onDocumentCreated(
+export const createNoteInChroma = onDocumentCreated(
     {
         secrets: [openAiApiKey],
         document: 'notes/{note}',
@@ -68,7 +68,7 @@ export const createnoteinchromav2 = onDocumentCreated(
     },
 );
 
-export const updatenoteinchromav2 = onDocumentUpdated(
+export const updateNoteInChroma = onDocumentUpdated(
     {
         secrets: [openAiApiKey],
         document: 'notes/{note}',
@@ -89,7 +89,7 @@ export const updatenoteinchromav2 = onDocumentUpdated(
     },
 );
 
-export const deletenoteinchromav2 = onDocumentDeleted(
+export const deleteNoteInChroma = onDocumentDeleted(
     {
         secrets: [openAiApiKey],
         document: 'notes/{note}',
