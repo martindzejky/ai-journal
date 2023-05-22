@@ -1,0 +1,41 @@
+diff --git a/node_modules/chromadb/dist/main/generated/api.js b/node_modules/chromadb/dist/main/generated/api.js
+index 4947434..a5d4616 100644
+--- a/node_modules/chromadb/dist/main/generated/api.js
++++ b/node_modules/chromadb/dist/main/generated/api.js
+@@ -1,4 +1,9 @@
+ "use strict";
++
++// Patched manually because Firebase Functions does not support native fetch!
++const fetch = require("node-fetch");
++const Headers = fetch.Headers;
++
+ /* eslint-disable */
+ // tslint:disable
+ /**
+diff --git a/node_modules/chromadb/dist/main/generated/runtime.js b/node_modules/chromadb/dist/main/generated/runtime.js
+index a657785..0e22bad 100644
+--- a/node_modules/chromadb/dist/main/generated/runtime.js
++++ b/node_modules/chromadb/dist/main/generated/runtime.js
+@@ -1,4 +1,8 @@
+ "use strict";
++
++// Patched manually because Firebase Functions does not support native fetch!
++const fetch = require("node-fetch");
++
+ /* eslint-disable */
+ // tslint:disable
+ /**
+diff --git a/node_modules/chromadb/dist/main/index.js b/node_modules/chromadb/dist/main/index.js
+index e55296e..468db8c 100644
+--- a/node_modules/chromadb/dist/main/index.js
++++ b/node_modules/chromadb/dist/main/index.js
+@@ -1,4 +1,9 @@
+ "use strict";
++
++// Patched manually because Firebase Functions does not support native fetch!
++const fetch = require("node-fetch");
++const Response = fetch.Response;
++
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.ChromaClient = exports.Collection = exports.CohereEmbeddingFunction = exports.OpenAIEmbeddingFunction = void 0;
+ const generated_1 = require("./generated");
