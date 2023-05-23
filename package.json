@@ -45,6 +45,7 @@
     "date-fns": "^2.29.3",
     "firebase-admin": "^11.6.0",
     "lodash-es": "^4.17.21",
+    "markdown-it": "^13.0.1",
     "nuxt": "^3.3.3",
     "nuxt-icon": "^0.3.3",
     "nuxt-vuefire": "^0.1.6",

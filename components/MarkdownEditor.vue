@@ -6,8 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { EditorContent, useEditor } from '@tiptap/vue-3';
-import { isEqual } from 'lodash-es';
+import { EditorContent, JSONContent, useEditor } from '@tiptap/vue-3';
 
 const props = defineProps({
     modelValue: {
@@ -35,7 +34,7 @@ const readonly = toRef(props, 'readonly');
 
 const modelValueParsed = computed(() => {
     try {
-        return JSON.parse(modelValue.value);
+        return defaultMarkdownParser.parse(modelValue.value) as JSONContent | null;
     } catch (e) {
         return modelValue.value;
     }
@@ -51,15 +50,16 @@ const editor = useEditor({
     autofocus: props.readonly ? false : 'start',
 
     onUpdate: ({ editor }) => {
-        emit('update:modelValue', JSON.stringify(editor.getJSON()));
+        emit('update:modelValue', defaultMarkdownSerializer.serialize(editor.state.doc));
     },
 });
 
 watch(modelValueParsed, (value) => {
     if (!editor.value) return;
 
-    const isSame = isEqual(editor.value.getJSON(), value);
-    if (isSame) return;
+    // compare with modelValue to compare strings instead of ProseMirror nodes
+    const serializedEditorValue = defaultMarkdownSerializer.serialize(editor.value.state.doc);
+    if (modelValue.value === serializedEditorValue) return;
 
     editor.value.commands.setContent(value, false);
 });
