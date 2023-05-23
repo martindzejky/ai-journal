@@ -18,6 +18,13 @@ export async function processAiMessage(chatId: string, messageId: string, openAi
         const db = getFirestore();
         const messageRef = db.collection('chats').doc(chatId).collection('messages').doc(messageId);
 
+        // TODO: DO NOT COMMIT!
+        await messageRef.update({
+            status: AIMessageStatus.Success,
+            content: 'TODO in **markdown**!',
+        });
+        return;
+
         // Get the chat data to get the owner's user ID
 
         const chat = await db.collection('chats').doc(chatId).get();
