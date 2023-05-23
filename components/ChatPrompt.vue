@@ -1,18 +1,17 @@
 <template>
-    <textarea
-        name="prompt"
-        id="prompt"
-        class="resize-none disabled:bg-stone-50 disabled:cursor-not-allowed placeholder-slate-400 !border-stone-200 border-b-0 border-x-0 !outline-none !ring-0"
-        rows="3"
-        :placeholder="placeholder"
-        :value="modelValue"
-        :disabled="disabled"
-        @input="$emit('update:modelValue', $event.target.value)"
-    ></textarea>
+    <MarkdownEditor
+        placeholder="Ask the AI anything. If you want it to use content from your notes, tell it do so."
+        readonly-placeholder="Wait for the AI to respond..."
+        class="resize-none bg-white px-4 py-2 border-t-stone-200 border-t !outline-none !ring-0"
+        :class="{ 'bg-stone-50 cursor-not-allowed': disabled }"
+        :readonly="disabled"
+        :model-value="modelValue"
+        @update:model-value="$emit('update:modelValue', $event)"
+    />
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
     modelValue: {
         type: String,
         default: '',
@@ -24,12 +23,4 @@ const props = defineProps({
 });
 
 defineEmits(['update:modelValue']);
-
-const placeholder = computed(() => {
-    if (props.disabled) {
-        return 'Wait for the AI to respond...';
-    }
-
-    return 'Ask the AI anything. If you want it to use content from your notes, tell it do so.';
-});
 </script>

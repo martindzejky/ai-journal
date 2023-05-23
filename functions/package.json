@@ -20,9 +20,11 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@tiptap/core": "^2.0.3",
+    "@tiptap/extension-blockquote": "^2.0.3",
     "@tiptap/extension-bold": "^2.0.3",
     "@tiptap/extension-bullet-list": "^2.0.2",
     "@tiptap/extension-code": "^2.0.3",
+    "@tiptap/extension-code-block": "^2.0.3",
     "@tiptap/extension-document": "^2.0.2",
     "@tiptap/extension-hard-break": "^2.0.3",
     "@tiptap/extension-heading": "^2.0.2",
