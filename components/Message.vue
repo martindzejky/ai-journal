@@ -88,9 +88,11 @@
             Something went wrong 😢!
         </p>
 
-        <p v-else>
-            {{ message.content }}
-        </p>
+        <MarkdownEditor
+            v-else
+            readonly
+            :model-value="message.content"
+        />
     </div>
 </template>
 

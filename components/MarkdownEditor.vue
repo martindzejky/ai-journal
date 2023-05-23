@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { EditorContent, JSONContent, useEditor } from '@tiptap/vue-3';
+import { EditorContent, useEditor } from '@tiptap/vue-3';
 
 const props = defineProps({
     modelValue: {
@@ -33,11 +33,7 @@ const modelValue = toRef(props, 'modelValue');
 const readonly = toRef(props, 'readonly');
 
 const modelValueParsed = computed(() => {
-    try {
-        return defaultMarkdownParser.parse(modelValue.value) as JSONContent | null;
-    } catch (e) {
-        return modelValue.value;
-    }
+    return defaultMarkdownParser.parse(modelValue.value);
 });
 
 const editor = useEditor({
@@ -45,13 +41,21 @@ const editor = useEditor({
         placeholder: props.placeholder,
         readonlyPlaceholder: props.readonlyPlaceholder,
     }),
-    content: modelValueParsed.value,
     editable: !props.readonly,
     autofocus: props.readonly ? false : 'start',
 
     onUpdate: ({ editor }) => {
         emit('update:modelValue', defaultMarkdownSerializer.serialize(editor.state.doc));
     },
+});
+
+// Need to initialize the content this way, passing modelValueParsed directly to useEditor.content does not work :shrug:
+// because the markdown parser produces a real ProseMirror Node instead of a JSONContent like TipTap expects.
+const stopInitialWatch = watch([editor, modelValueParsed], ([editor, modelValueParsed]) => {
+    if (!editor) return;
+    if (!modelValueParsed) return;
+    editor.state.doc = modelValueParsed;
+    stopInitialWatch();
 });
 
 watch(modelValueParsed, (value) => {
