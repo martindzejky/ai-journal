@@ -57,7 +57,11 @@ const stopInitialWatch = watch([editor, modelValueParsed], ([editor, modelValueP
     if (!editor) return;
     if (!modelValueParsed) return;
 
-    editor.state.doc = modelValueParsed;
+    editor.commands.command(({ tr, state }) => {
+        tr.replaceWith(0, state.doc.nodeSize - 2, modelValueParsed);
+        return true;
+    });
+
     stopInitialWatch();
 });
 
@@ -69,7 +73,10 @@ watch(modelValueParsed, (value) => {
     const serializedEditorValue = defaultMarkdownSerializer.serialize(editor.value.state.doc);
     if (modelValue.value === serializedEditorValue) return;
 
-    editor.value.state.doc = value;
+    editor.value.commands.command(({ tr, state }) => {
+        tr.replaceWith(0, state.doc.nodeSize - 2, value);
+        return true;
+    });
 });
 
 watch(readonly, (value) => {
