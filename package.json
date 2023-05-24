@@ -14,7 +14,7 @@
     "prepare": "husky install"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.6.5",

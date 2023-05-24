@@ -12,7 +12,7 @@
     "postinstall": "patch-package"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "main": "dist/index.js",
   "module": "dist/module.js",
