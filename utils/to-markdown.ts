@@ -167,6 +167,9 @@ export const defaultMarkdownSerializer = new MarkdownSerializer(
             escape: false,
         },
     },
+    {
+        hardBreakNodeName: 'hardBreak',
+    },
 );
 
 function backticksFor(node: Node, side: number) {
