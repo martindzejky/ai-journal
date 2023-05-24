@@ -17,7 +17,7 @@
             class="flex-none"
             v-model="prompt"
             :disabled="isLastMessageFromUser || !isLastMessageDone"
-            @keydown.enter="confirm"
+            @keydown.capture.enter="confirm"
         />
     </section>
 </template>
