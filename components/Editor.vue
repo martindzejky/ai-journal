@@ -1,6 +1,7 @@
 <template>
     <EditorContent
         v-if="editor"
+        class="editor"
         :editor="editor"
     />
 </template>
@@ -63,3 +64,9 @@ watch(modelValueParsed, (value) => {
     editor.value.commands.setContent(value, false);
 });
 </script>
+
+<style scoped>
+.editor :deep(.ProseMirror) {
+    outline: none !important;
+}
+</style>

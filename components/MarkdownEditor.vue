@@ -1,6 +1,7 @@
 <template>
     <EditorContent
         v-if="editor"
+        class="editor"
         :editor="editor"
     />
 </template>
@@ -88,3 +89,9 @@ watch(readonly, (value) => {
     });
 });
 </script>
+
+<style scoped>
+.editor :deep(.ProseMirror) {
+    outline: none !important;
+}
+</style>
