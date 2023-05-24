@@ -17,7 +17,8 @@ export class Chroma {
             n_results: results,
         });
 
-        return result.ids;
+        // @ts-expect-error incorrect types... :facepalm:
+        return result.ids?.[0] ?? [];
     }
 
     async createNote(note: Note) {
