@@ -1,4 +1,4 @@
-import { parse } from 'date-fns';
+import { isValid, parse } from 'date-fns';
 import { ChatCompletionRequestMessage, OpenAIApi } from 'openai';
 import { DocumentReference, getFirestore } from 'firebase-admin/firestore';
 import { AIMessageStatus, Message } from '../../../types/message';
@@ -129,12 +129,26 @@ export async function figureOutNecessaryContext(
                     const from = parse(dates[0], 'yyyy-MM-dd', new Date());
                     const to = parse(dates[1] ?? dates[0], 'yyyy-MM-dd', new Date());
 
-                    context.dates = { from, to };
+                    if (!isValid(from)) {
+                        logger.log('Provided from date is invalid', {
+                            chatId,
+                            messageId,
+                            date: dates[0],
+                        });
+                    } else if (!isValid(to)) {
+                        logger.log('Provided to date is invalid', {
+                            chatId,
+                            messageId,
+                            date: dates[1],
+                        });
+                    } else {
+                        context.dates = { from, to };
 
-                    logger.log('Parsed dates successfully', {
-                        chatId,
-                        messageId,
-                    });
+                        logger.log('Parsed dates successfully', {
+                            chatId,
+                            messageId,
+                        });
+                    }
                 } else {
                     logger.log('No dates specified', {
                         chatId,
