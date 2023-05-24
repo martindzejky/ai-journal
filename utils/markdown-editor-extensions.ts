@@ -27,6 +27,15 @@ interface EditorExtensionOptions {
 // Inspired by: https://github.com/ProseMirror/prosemirror-markdown/blob/master/src/schema.ts
 export function markdownEditorExtensions(options: Partial<EditorExtensionOptions> = {}) {
     return [
+        Extension.create({
+            addKeyboardShortcuts() {
+                return {
+                    // capture TAB key in editor, make sure it does not move focus
+                    Tab: () => true,
+                };
+            },
+        }),
+
         Document,
 
         Paragraph.configure({
