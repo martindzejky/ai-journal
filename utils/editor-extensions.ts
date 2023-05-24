@@ -28,6 +28,7 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
                 return {
                     // capture TAB key in editor, make sure it does not move focus
                     Tab: () => true,
+                    'Shift-Tab': () => true,
                 };
             },
         }),
