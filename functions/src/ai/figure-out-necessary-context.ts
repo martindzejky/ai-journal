@@ -8,6 +8,8 @@ import { Chroma } from '../chroma/chroma';
 import contextBuildingSystem from '../prompts/context-building-system';
 import contextBuilding from '../prompts/context-building';
 import systemCurrentDate from '../prompts/system-current-date';
+import contextBuildingPrePrompt from '../prompts/context-building-pre-prompt';
+import contextBuildingPostPrompt from '../prompts/context-building-post-prompt';
 
 export async function figureOutNecessaryContext(
     uid: string,
@@ -57,7 +59,11 @@ export async function figureOutNecessaryContext(
         },
         {
             role: 'user',
-            content: contextBuilding + lastUserMessage.content,
+            content:
+                contextBuilding +
+                contextBuildingPrePrompt +
+                lastUserMessage.content +
+                contextBuildingPostPrompt,
         },
     ];
 

@@ -15,10 +15,15 @@ dates:
 dates: 2022-11-11 2022-12-04
 dates: 2023-01-05 2023-01-05
 
+Invalid examples:
+dates: N/A (because N/A is not a date)
+dates: 2023-04-19 (because it's missing the second date)
+
 For the second field, try to figure out the intent of my prompt and whether you need any additional context, beside my journal notes, if any. If I'm referring to the journaling app, asking about help about how to use it, output "documentation". If I'm asking about you, the AI assistant, for example what you can do, output "ai". You can output multiple contexts separated by a space. Few examples:
 include: documentation ai
 include: ai
 include:
 
-Here's my prompt:
+Invalid examples:
+include: N/A (because N/A is not a valid context)
 `;
