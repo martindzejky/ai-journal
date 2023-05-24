@@ -135,5 +135,26 @@ export function markdownEditorExtensions(options: Partial<EditorExtensionOptions
                 ];
             },
         }),
+
+        // handle chat-style ENTER behaviour -> ENTER sends message, SHIFT+ENTER goes to a new line
+        // just like ENTER would in a regular editor, SHIFT+CMD+ENTER enters the hard break
+        Extension.create({
+            addKeyboardShortcuts() {
+                return {
+                    Enter: () => true,
+
+                    'Shift-Enter': ({ editor }) =>
+                        editor.commands.first(({ commands }) => [
+                            () => commands.splitListItem('listItem'),
+                            () => commands.newlineInCode(),
+                            () => commands.createParagraphNear(),
+                            () => commands.liftEmptyBlock(),
+                            () => commands.splitBlock(),
+                        ]),
+
+                    'Mod-Shift-Enter': () => this.editor.commands.setHardBreak(),
+                };
+            },
+        }),
     ];
 }
