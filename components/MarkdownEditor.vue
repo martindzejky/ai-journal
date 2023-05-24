@@ -29,12 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const modelValue = toRef(props, 'modelValue');
-const readonly = toRef(props, 'readonly');
-
-const modelValueParsed = computed(() => {
-    return defaultMarkdownParser.parse(modelValue.value);
-});
+const { modelValue, readonly } = toRefs(props);
 
 const editor = useEditor({
     extensions: markdownEditorExtensions({
@@ -49,23 +44,32 @@ const editor = useEditor({
     },
 });
 
+const modelValueParsed = computed(() => {
+    if (!editor.value) return null;
+
+    const parser = getDefaultMarkdownParserForSchema(editor.value.schema);
+    return parser.parse(modelValue.value);
+});
+
 // Need to initialize the content this way, passing modelValueParsed directly to useEditor.content does not work :shrug:
 // because the markdown parser produces a real ProseMirror Node instead of a JSONContent like TipTap expects.
 const stopInitialWatch = watch([editor, modelValueParsed], ([editor, modelValueParsed]) => {
     if (!editor) return;
     if (!modelValueParsed) return;
+
     editor.state.doc = modelValueParsed;
     stopInitialWatch();
 });
 
 watch(modelValueParsed, (value) => {
     if (!editor.value) return;
+    if (!value) return;
 
     // compare with modelValue to compare strings instead of ProseMirror nodes
     const serializedEditorValue = defaultMarkdownSerializer.serialize(editor.value.state.doc);
     if (modelValue.value === serializedEditorValue) return;
 
-    editor.value.commands.setContent(value, false);
+    editor.value.state.doc = value;
 });
 
 watch(readonly, (value) => {
