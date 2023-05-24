@@ -1,7 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import Token from 'markdown-it/lib/token';
 import { Attrs, Mark, MarkType, Node, NodeType, Schema } from '@tiptap/pm/model';
-import { getSchema } from '@tiptap/core';
 
 // This implementation was copied from
 // https://github.com/ProseMirror/prosemirror-markdown/blob/master/src/from_markdown.ts
@@ -274,10 +273,8 @@ function listIsTight(tokens: readonly Token[], i: number) {
 
 /// A parser parsing unextended [CommonMark](http://commonmark.org/),
 /// without inline HTML, and producing a document in the basic schema.
-export const defaultMarkdownParser = new MarkdownParser(
-    getSchema(markdownEditorExtensions()),
-    MarkdownIt('commonmark', { html: false }),
-    {
+export function getDefaultMarkdownParserForSchema(schema: Schema) {
+    return new MarkdownParser(schema, MarkdownIt('commonmark', { html: false }), {
         blockquote: { block: 'blockquote' },
         paragraph: { block: 'paragraph' },
         list_item: { block: 'listItem' },
@@ -312,5 +309,5 @@ export const defaultMarkdownParser = new MarkdownParser(
             }),
         },
         code_inline: { mark: 'code', noCloseToken: true },
-    },
-);
+    });
+}
