@@ -117,7 +117,7 @@ export function editorExtensions(options: Partial<EditorExtensionOptions> = {}) 
         Bold,
         Italic,
         HardBreak,
-        Link,
+        Link.configure({ openOnClick: false }),
         Strike,
         Typography,
 
