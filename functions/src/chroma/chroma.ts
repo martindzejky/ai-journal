@@ -1,6 +1,8 @@
 import { Note } from '../../../types/note';
 import { ChromaClient, OpenAIEmbeddingFunction } from 'chromadb';
 import { getNoteContentAsText } from '../get-note-content';
+import { IncludeEnum } from 'chromadb/dist/main/types';
+import { takeWhile } from 'lodash';
 
 export class Chroma {
     private client = new ChromaClient();
@@ -15,10 +17,15 @@ export class Chroma {
             query_text: prompt,
             where: { owner },
             n_results: results,
+            include: [IncludeEnum.Distances],
         });
 
         // @ts-expect-error incorrect types... :facepalm:
-        return result.ids?.[0] ?? [];
+        const ids: string[] = result.ids?.[0] ?? [];
+        const distances: number[] = result.distances?.[0] ?? [];
+
+        // only return relevant results
+        return takeWhile(ids, (id, index) => distances[index] < 0.4);
     }
 
     async createNote(note: Note) {
