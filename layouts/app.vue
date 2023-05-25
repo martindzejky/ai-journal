@@ -1,6 +1,6 @@
 <template>
     <div class="h-screen grid">
-        <nav class="nav">
+        <nav class="nav min-h-0">
             <Nav />
         </nav>
 
